@@ -10,4 +10,3 @@ add_subdirectory(glad)
 link_libraries(glad glfw)
 
 add_executable(hello_window "src/hello_window.cpp")
-target_link_libraries(hello_window)
