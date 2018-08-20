@@ -1,7 +1,8 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <fstream>
+#include <array>
+#include <type_traits>
 
 constexpr unsigned int LOG_LENGTH = 512;
 
@@ -21,6 +22,11 @@ const char *fragmentShaderSource =
         "void main(){\n"
         "fragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
         "}";
+
+template<typename T>
+unsigned int arrayDataSize(const T& a) {
+    return a.size() * sizeof(typename T::value_type);
+}
 
 int createShaderProgram();
 unsigned int compileShader(int shaderType, const char *shaderSource, unsigned int numSourceCodeStr);
@@ -53,28 +59,40 @@ int main()
 
     auto shaderProgram = createShaderProgram();
 
-    //Setup vertex data to draw
-    float vertices[] = {
-        -0.5f, -0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        0.0f, 0.5f, 0.0f
+    //Rectangle vertices
+    std::array<float, 12> vertices = {
+        0.5f,  0.5f, 0.0f, //Top right
+        0.5f, -0.5f, 0.0f, //Bottom right
+       -0.5f, -0.5f, 0.0f, //Bottom left
+       -0.5f,  0.5f, 0.0f, //Top left
     };
 
-    unsigned int vao, vbo;
+    std::array<unsigned int, 6> indices = {
+        0, 1, 3, //1st triangle
+        1, 2, 3, //2nd triangle
+    };
+
+    unsigned int vao, vbo, ebo;
     glGenVertexArrays(1, &vao);
     glGenBuffers(1, &vbo);
+    glGenBuffers(1, &ebo);
 
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
-    //Configure vertex attributes
+    //Copy vertex & index data into GPU buffer's memory
+    glBufferData(GL_ARRAY_BUFFER, arrayDataSize(vertices), vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, arrayDataSize(indices), indices.data(), GL_STATIC_DRAW);
+
+    //Set vertex attribute pointers
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), static_cast<void*>(0));
     glEnableVertexAttribArray(0);
 
-    //Unbind VBO and VAO
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    //Unbind
+    glBindBuffer(GL_ARRAY_BUFFER, 0); //can unbind before VAO since glVertexAttribPointer registered VBO as bound buffer
     glBindVertexArray(0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); //unbind after VAO since VAO records all ebo binds/unbinds
 
     //Setup window
     glViewport(0, 0, 800, 600);
@@ -86,10 +104,10 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        //Draw triangle
         glUseProgram(shaderProgram);
         glBindVertexArray(vao);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -150,5 +168,9 @@ void frameBufferSizeCb(GLFWwindow *window, int width, int height) {
 void processInput(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
+    } else if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+        static bool toggle = false;
+        toggle = !toggle;
+        glPolygonMode(GL_FRONT_AND_BACK, toggle ? GL_FILL : GL_LINE);
     }
 }
