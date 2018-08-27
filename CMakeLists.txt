@@ -9,4 +9,5 @@ add_subdirectory(glad)
 
 link_libraries(glad glfw)
 
-add_executable(hello_window "src/hello_window.cpp")
+add_executable(lesson1_window "src/lesson1_window.cpp")
+add_executable(lesson1_exercise "src/lesson1_exercise.cpp")

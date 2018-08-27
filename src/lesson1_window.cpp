@@ -23,9 +23,9 @@ const char *fragmentShaderSource =
         "fragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
         "}";
 
-template<typename T>
-unsigned int arrayDataSize(const T& a) {
-    return a.size() * sizeof(typename T::value_type);
+template<typename T, std::size_t N>
+unsigned int arrayDataSize(const std::array<T,N>& a) {
+    return N * sizeof(T);
 }
 
 int createShaderProgram();
