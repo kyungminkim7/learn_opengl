@@ -1,0 +1,13 @@
+cmake_minimum_required(VERSION 3.0)
+project(gl_lessons)
+
+set(CMAKE_CXX_STANDARD 14)
+
+find_package(glfw3 3.2 REQUIRED)
+find_package(OpenGL REQUIRED)
+
+link_libraries(glad glfw gl_util)
+
+add_executable(lesson1_window "src/lesson1_window.cpp")
+add_executable(lesson1_exercise "src/lesson1_exercise.cpp")
+add_executable(lesson2_shaders "src/lesson2_shaders.cpp")
