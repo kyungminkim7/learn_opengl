@@ -1,3 +1,6 @@
+/// Follows "Hello Window" and "Hello Triangle" lessons.
+/// Creates a basic window and rectangle from 2 triangles.
+
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>

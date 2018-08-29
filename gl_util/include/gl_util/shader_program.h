@@ -2,9 +2,22 @@
 #include <string>
 #include <memory>
 
+/**
+ * @brief The ShaderProgram class manages loading, compiling, linking
+ * and managing shader programs.
+ */
 class ShaderProgram
 {
 public:
+    /**
+     * @brief New Factory function for loading, compiling, linking shaders
+     * to create a shader program.
+     *
+     * @param vertexShaderPath Vertex shader filepath.
+     * @param fragmentShaderPath Vertex shader filepath.
+     * @return Shader program if successfully compiled and linked;
+     *         nullptr if compilation or link failed.
+     */
     static std::unique_ptr<ShaderProgram> New(const std::string &vertexShaderPath, const std::string &fragmentShaderPath);
 
     ShaderProgram(const ShaderProgram&) = delete;

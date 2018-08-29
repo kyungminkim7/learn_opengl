@@ -1,4 +1,6 @@
-///Draw 2 triangles next to each other using glDrawArrays
+/// Solves the exercise in "Hello Triangle" lesson.
+/// Draws 2 triangles using separate shader programs.
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>

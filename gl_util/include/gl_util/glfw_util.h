@@ -1,3 +1,4 @@
+///Helper functions for GLFW and GLAD.
 #pragma once
 #include <string>
 
