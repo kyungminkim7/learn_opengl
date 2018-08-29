@@ -1,4 +1,4 @@
-#include "shader_program.h"
+#include "gl_util/shader_program.h"
 #include <glad/glad.h>
 #include <boost/optional.hpp>
 #include <iostream>

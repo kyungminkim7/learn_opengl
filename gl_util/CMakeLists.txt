@@ -3,8 +3,12 @@ project(gl_util)
 
 find_package(Boost REQUIRED)
 find_package(OpenGL REQUIRED)
+find_package(glfw3 REQUIRED)
 
-add_library(gl_util "src/shader_program.cpp")
+add_library(gl_util
+    "src/shader_program.cpp"
+    "src/glfw_util.cpp"
+)
 
 target_include_directories(gl_util
     PUBLIC
@@ -15,8 +19,10 @@ target_include_directories(gl_util
 )
 
 target_link_libraries(gl_util
-    PRIVATE
+    PUBLIC
         glad
+        glfw
+    PRIVATE
         ${Boost_LIBRARIES}
 )
 
