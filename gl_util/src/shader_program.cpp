@@ -5,7 +5,10 @@
 #include <fstream>
 #include <sstream>
 
-static constexpr unsigned int LOG_LENGTH = 512;
+namespace gl {
+
+static constexpr unsigned int LOG_LENGTH = 1024;
+static std::string readShaderFile(const std::string& shaderPath);
 static boost::optional<unsigned int> compileShader(int shaderType, const char *shaderSource);
 
 std::unique_ptr<ShaderProgram> ShaderProgram::New(const std::string &vertexShaderPath, const std::string &fragmentShaderPath) {
@@ -13,22 +16,35 @@ std::unique_ptr<ShaderProgram> ShaderProgram::New(const std::string &vertexShade
 
     //Read shader codes from file
     std::ifstream vertexShaderFile(vertexShaderPath), fragmentShaderFile(fragmentShaderPath);
-    std::stringstream vertexShaderStream, fragmentShaderStream;
 
+    if (!vertexShaderFile.is_open()) {
+        std::cerr << "ERROR: Unable to open vertex shader file: " << vertexShaderPath << "\n";
+        return nullptr;
+    }
+    std::cout << "Found vertex shader file: " << vertexShaderPath << "\n";
+
+    if (!fragmentShaderFile.is_open()) {
+        std::cerr << "ERROR: Unable to open fragment shader file: " << fragmentShaderPath << "\n";
+        return nullptr;
+    }
+    std::cout << "Found fragment shader file: " << fragmentShaderPath << "\n";
+
+    std::stringstream vertexShaderStream, fragmentShaderStream;
     vertexShaderStream << vertexShaderFile.rdbuf();
     fragmentShaderStream << fragmentShaderFile.rdbuf();
 
-    auto vertexShaderCode = vertexShaderStream.str().c_str();
-    auto fragmentShaderCode = fragmentShaderStream.str().c_str();
+    auto vertexShaderCode = vertexShaderStream.str();
+    auto fragmentShaderCode = fragmentShaderStream.str();
 
     //Compile shaders
     unsigned int vertexShader, fragmentShader;
-    auto optVertexShader = compileShader(GL_VERTEX_SHADER, vertexShaderCode);
-    auto optFragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentShaderCode);
+    auto optVertexShader = compileShader(GL_VERTEX_SHADER, vertexShaderCode.c_str());
+    auto optFragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentShaderCode.c_str());
 
     if (optVertexShader && optFragmentShader) {
         vertexShader = *optVertexShader;
         fragmentShader = *optFragmentShader;
+        std::cout << "Successfully compiled vertex & fragment shaders.\n";
     } else {
         return nullptr;
     }
@@ -48,11 +64,16 @@ std::unique_ptr<ShaderProgram> ShaderProgram::New(const std::string &vertexShade
                   << log << "\n";
         return nullptr;
     }
+    std::cout << "Successfully linked vertex & fragment shaders.\n";
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
     return shaderProgram;
+}
+
+std::string readShaderFile(const std::string& shaderPath) {
+
 }
 
 boost::optional<unsigned int> compileShader(int shaderType, const char *shaderSource) {
@@ -94,14 +115,24 @@ void ShaderProgram::use() {
     glUseProgram(this->id);
 }
 
-void ShaderProgram::setUniformBool(const std::string &name, bool value) {
-    this->setUniformInt(name, value);
+void ShaderProgram::setUniform1b(const std::string &name, bool value) {
+    this->setUniform1i(name, value);
 }
 
-void ShaderProgram::setUniformInt(const std::string &name, int value) {
+void ShaderProgram::setUniform1i(const std::string &name, int value) {
     glUniform1i(glGetUniformLocation(this->id, name.c_str()), value);
 }
 
-void ShaderProgram::setUniformFloat(const std::string &name, float value) {
+void ShaderProgram::setUniform1f(const std::string &name, float value) {
     glUniform1f(glGetUniformLocation(this->id, name.c_str()), value);
+}
+
+void ShaderProgram::setUniform3f(const std::string &name, float x, float y, float z) {
+    glUniform3f(glGetUniformLocation(this->id, name.c_str()), x, y, z);
+}
+
+void ShaderProgram::setUniform4f(const std::string &name, float x, float y, float z, float w) {
+    glUniform4f(glGetUniformLocation(this->id, name.c_str()), x, y, z, w);
+}
+
 }

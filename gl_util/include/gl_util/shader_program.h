@@ -2,6 +2,8 @@
 #include <string>
 #include <memory>
 
+namespace gl {
+
 /**
  * @brief The ShaderProgram class manages loading, compiling, linking
  * and managing shader programs.
@@ -27,12 +29,16 @@ public:
 
     void use();
 
-    void setUniformBool(const std::string &name, bool value);
-    void setUniformInt(const std::string &name, int value);
-    void setUniformFloat(const std::string &name, float value);
+    void setUniform1b(const std::string &name, bool value);
+    void setUniform1i(const std::string &name, int value);
+    void setUniform1f(const std::string &name, float value);
+    void setUniform3f(const std::string &name, float x, float y=0.0f, float z=0.0f);
+    void setUniform4f(const std::string &name, float x, float y=0.0f, float z=0.0f, float w=0.0f);
 
 private:
     ShaderProgram() = default;
 
     unsigned int id;
 };
+
+}

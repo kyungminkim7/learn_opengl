@@ -3,10 +3,13 @@ project(gl_lessons)
 
 set(CMAKE_CXX_STANDARD 14)
 
+find_package(Boost REQUIRED)
 find_package(glfw3 3.2 REQUIRED)
 find_package(OpenGL REQUIRED)
 
-link_libraries(glad glfw gl_util)
+INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
+
+link_libraries(glad glfw gl_util ${BOOST_LIBRARIES})
 
 add_executable(lesson1_window "src/lesson1_window.cpp")
 add_executable(lesson1_exercise "src/lesson1_exercise.cpp")

@@ -4,7 +4,7 @@
 
 class GLFWwindow;
 
-namespace glfw_util {
+namespace gl {
 
 void initializeGLFW(unsigned int contextMajorVersion, unsigned int contextMinorVersion);
 bool initializeGLAD();

@@ -3,7 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-namespace glfw_util {
+namespace gl {
 
 void initializeGLFW(unsigned int contextMajorVersion, unsigned int contextMinorVersion) {
     glfwInit();
