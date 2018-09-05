@@ -5,7 +5,7 @@ find_package(Boost REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 
-add_library(gl_util
+add_library(gl_util SHARED
     "src/shader_program.cpp"
     "src/glfw_util.cpp"
 )

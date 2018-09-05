@@ -2,7 +2,8 @@
 #include <GLFW/glfw3.h>
 #include <gl_util/glfw_util.h>
 #include <gl_util/shader_program.h>
-#include <cmath>
+#include <stb_image.h>
+#include <iostream>
 
 template<typename T, std::size_t N>
 unsigned int arrayDataSize(const std::array<T,N>& a) {
@@ -25,18 +26,22 @@ int main() {
     glViewport(0, 0, windowWidth, windowHeight);
     glfwSetFramebufferSizeCallback(window, &frameBufferSizeCb);
 
-    auto shaderProgram = gl::ShaderProgram::New("../../learn_opengl/lessons/src/lesson2_more_attribs.vert",
-                                                "../../learn_opengl/lessons/src/lesson2_more_attribs.frag");
+    auto shaderProgram = gl::ShaderProgram::New("../../learn_opengl/lessons/src/lesson3_applying_textures.vert",
+                                                "../../learn_opengl/lessons/src/lesson3_applying_textures.frag");
 
-    std::array<float, 3 * 6> vertices = {
-        //pos              //colors
-        0.0f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f,//Top
-        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, //Bottom right
-       -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f //Bottom left
+    //Setup vertex data
+    std::array<float, 4 * 8> vertices = {
+        //pos                //colors            //texture coords
+       -0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   0.0f, 1.0f, //Top left
+        0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   1.0f, 1.0f, //Top right
+        0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, //Bottom right
+       -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f  //Bottom left
     };
 
-    std::array<unsigned int, 3> indices = {
-        0, 1, 2, //1st triangle
+    //rectangle
+    std::array<unsigned int, 2 * 3> indices = {
+        0, 1, 2,
+        2, 3, 0,
     };
 
     unsigned int vao, vbo, ebo;
@@ -53,20 +58,45 @@ int main() {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, arrayDataSize(indices), indices.data(), GL_STATIC_DRAW);
 
     //Position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void*>(0));
     glEnableVertexAttribArray(0);
 
     //Color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+
+    //Texture coordinate attribute
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void*>(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     //Unbind
     glBindBuffer(GL_ARRAY_BUFFER, 0); //can unbind before VAO since glVertexAttribPointer registered VBO as bound buffer
     glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); //unbind after VAO since VAO records all ebo binds/unbinds
 
+    //Load & create a texture
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    int imgWidth, imgHeight, numImgChannels;
+    const auto imgFilepath = "../../learn_opengl/lessons/images/container.jpg";
+    auto img = stbi_load(imgFilepath, &imgWidth, &imgHeight, &numImgChannels, 0);
+    if (!img) {
+        std::cerr << "Failed to load img from file: " << imgFilepath << "\n";
+        return -1;
+    }
+
+    glTexImage2D(GL_TEXTURE_2D,
+                 0, GL_RGB, imgWidth, imgHeight, 0, //Texture attributes
+                 GL_RGB, GL_UNSIGNED_BYTE, img);    //Src img attributes
+    glGenerateMipmap(GL_TEXTURE_2D);
+    stbi_image_free(img);
+
     shaderProgram->use();
-//    shaderProgram->setUniform3f("posOffset", 0.25f, 0.0f, 0.0f);
 
     while (!glfwWindowShouldClose(window)) {
         processInput(window);
@@ -74,9 +104,9 @@ int main() {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        glBindTexture(GL_TEXTURE_2D, texture);
         glBindVertexArray(vao);
         glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-        glBindVertexArray(0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

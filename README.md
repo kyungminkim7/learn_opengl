@@ -13,11 +13,10 @@ The lesson and exercise source files are under the lesson subdirectory
 ### Building Lesson Executables
 1. Install required dependencies listed above.
 2. Clone the repository: git clone https://github.com/kyungminkim7/learn_opengl.git
-3. Build the executables by executing the following commands:
-	- cd learn_opengl
+3. Build the executables by executing the following commands (out-of-src build completely separate from the project directory):
 	- mkdir build
 	- cd build
-	- cmake ..
+        - cmake ../learn_opengl
 	- make
 	- cd lessons
 4. Run any of the executables inside the lessons directory.
