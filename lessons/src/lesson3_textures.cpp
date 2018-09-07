@@ -4,6 +4,7 @@
 #include <gl_util/shader_program.h>
 #include <stb_image.h>
 #include <iostream>
+#include <array>
 
 template<typename T, std::size_t N>
 unsigned int arrayDataSize(const std::array<T,N>& a) {
@@ -26,8 +27,8 @@ int main() {
     glViewport(0, 0, windowWidth, windowHeight);
     glfwSetFramebufferSizeCallback(window, &frameBufferSizeCb);
 
-    auto shaderProgram = gl::ShaderProgram::New("../../learn_opengl/lessons/src/lesson3_applying_textures.vert",
-                                                "../../learn_opengl/lessons/src/lesson3_applying_textures.frag");
+    gl::ShaderProgram shaderProgram("../../learn_opengl/lessons/src/lesson3_applying_textures.vert",
+                                    "../../learn_opengl/lessons/src/lesson3_applying_textures.frag");
 
     //Setup vertex data
     std::array<float, 4 * 8> vertices = {
@@ -96,7 +97,7 @@ int main() {
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(img);
 
-    shaderProgram->use();
+    shaderProgram.use();
 
     while (!glfwWindowShouldClose(window)) {
         processInput(window);

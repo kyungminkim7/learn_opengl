@@ -3,6 +3,7 @@
 #include <gl_util/glfw_util.h>
 #include <gl_util/shader_program.h>
 #include <cmath>
+#include <array>
 
 template<typename T, std::size_t N>
 unsigned int arrayDataSize(const std::array<T,N>& a) {
@@ -25,8 +26,8 @@ int main() {
     glViewport(0, 0, windowWidth, windowHeight);
     glfwSetFramebufferSizeCallback(window, &frameBufferSizeCb);
 
-    auto shaderProgram = gl::ShaderProgram::New("../../learn_opengl/lessons/src/lesson2_more_attribs.vert",
-                                                "../../learn_opengl/lessons/src/lesson2_more_attribs.frag");
+    gl::ShaderProgram shaderProgram("../../learn_opengl/lessons/src/lesson2_more_attribs.vert",
+                                    "../../learn_opengl/lessons/src/lesson2_more_attribs.frag");
 
     std::array<float, 3 * 6> vertices = {
         //pos              //colors
@@ -65,8 +66,8 @@ int main() {
     glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); //unbind after VAO since VAO records all ebo binds/unbinds
 
-    shaderProgram->use();
-//    shaderProgram->setUniform3f("posOffset", 0.25f, 0.0f, 0.0f);
+    shaderProgram.use();
+//    shaderProgram.setUniform3f("posOffset", 0.25f, 0.0f, 0.0f);
 
     while (!glfwWindowShouldClose(window)) {
         processInput(window);

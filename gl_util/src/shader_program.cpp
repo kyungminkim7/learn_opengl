@@ -1,6 +1,6 @@
-#include "gl_util/shader_program.h"
+#include <gl_util/shader_program.h>
+#include <gl_util/gl_exception.h>
 #include <glad/glad.h>
-#include <boost/optional.hpp>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -8,104 +8,79 @@
 namespace gl {
 
 static constexpr unsigned int LOG_LENGTH = 1024;
-static std::string readShaderFile(const std::string& shaderPath);
-static boost::optional<unsigned int> compileShader(int shaderType, const char *shaderSource);
 
-std::unique_ptr<ShaderProgram> ShaderProgram::New(const std::string &vertexShaderPath, const std::string &fragmentShaderPath) {
-    std::unique_ptr<ShaderProgram> shaderProgram(new ShaderProgram);
+///Throws std::ios_base::failure if failed to read from file.
+static std::string readFile(const std::string& filepath);
 
-    //Read shader codes from file
-    std::ifstream vertexShaderFile(vertexShaderPath), fragmentShaderFile(fragmentShaderPath);
+///Throws gl::BuildError if failed to compile shader.
+static unsigned int compileShader(int shaderType, const std::string& shaderPath, const std::string& shaderCode);
 
-    if (!vertexShaderFile.is_open()) {
-        std::cerr << "ERROR: Unable to open vertex shader file: " << vertexShaderPath << "\n";
-        return nullptr;
-    }
-    std::cout << "Found vertex shader file: " << vertexShaderPath << "\n";
-
-    if (!fragmentShaderFile.is_open()) {
-        std::cerr << "ERROR: Unable to open fragment shader file: " << fragmentShaderPath << "\n";
-        return nullptr;
-    }
-    std::cout << "Found fragment shader file: " << fragmentShaderPath << "\n";
-
-    std::stringstream vertexShaderStream, fragmentShaderStream;
-    vertexShaderStream << vertexShaderFile.rdbuf();
-    fragmentShaderStream << fragmentShaderFile.rdbuf();
-
-    auto vertexShaderCode = vertexShaderStream.str();
-    auto fragmentShaderCode = fragmentShaderStream.str();
+ShaderProgram::ShaderProgram(const std::string &vertexShaderPath, const std::string &fragmentShaderPath) {
+    auto vertexShaderCode = readFile(vertexShaderPath);
+    auto fragmentShaderCode = readFile(fragmentShaderPath);
 
     //Compile shaders
-    unsigned int vertexShader, fragmentShader;
-    auto optVertexShader = compileShader(GL_VERTEX_SHADER, vertexShaderCode.c_str());
-    auto optFragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentShaderCode.c_str());
-
-    if (optVertexShader && optFragmentShader) {
-        vertexShader = *optVertexShader;
-        fragmentShader = *optFragmentShader;
-        std::cout << "Successfully compiled vertex & fragment shaders.\n";
-    } else {
-        return nullptr;
-    }
+    auto vertexShader = compileShader(GL_VERTEX_SHADER, vertexShaderPath, vertexShaderCode);
+    auto fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentShaderPath, fragmentShaderCode);
+    std::cout << "Successfully compiled vertex & fragment shaders.\n";
 
     //Link shaders
-    shaderProgram->id = glCreateProgram();
-    glAttachShader(shaderProgram->id, vertexShader);
-    glAttachShader(shaderProgram->id, fragmentShader);
+    this->id = glCreateProgram();
+    glAttachShader(this->id, vertexShader);
+    glAttachShader(this->id, fragmentShader);
 
     int success;
-    char log[LOG_LENGTH];
-    glLinkProgram(shaderProgram->id);
-    glGetProgramiv(shaderProgram->id, GL_LINK_STATUS, &success);
+    glLinkProgram(this->id);
+    glGetProgramiv(this->id, GL_LINK_STATUS, &success);
     if (!success) {
-        glGetProgramInfoLog(shaderProgram->id, LOG_LENGTH, nullptr, log);
-        std::cerr << "ERROR: Shader program link failed:\n"
-                  << log << "\n";
-        return nullptr;
+        char linkLog[LOG_LENGTH];
+        glGetProgramInfoLog(this->id, LOG_LENGTH, nullptr, linkLog);
+
+        std::stringstream errorMsg;
+        errorMsg << "Failed to link shaders\n" << linkLog;
+        throw gl::BuildError(errorMsg.str());
     }
     std::cout << "Successfully linked vertex & fragment shaders.\n";
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
-
-    return shaderProgram;
 }
 
-std::string readShaderFile(const std::string& shaderPath) {
+std::string readFile(const std::string& filepath) {
+    std::ifstream file(filepath);
 
+    //Check for valid file
+    if (!file.is_open()) {
+        std::stringstream errorMsg;
+        errorMsg << "Failed to open file: " << filepath;
+        throw std::ios_base::failure(errorMsg.str());
+    }
+    std::cout << "Found file: " << filepath << "\n";
+
+    //Read file
+    std::stringstream filestream;
+    filestream << file.rdbuf();
+
+    return filestream.str();
 }
 
-boost::optional<unsigned int> compileShader(int shaderType, const char *shaderSource) {
+unsigned int compileShader(int shaderType, const std::string& shaderPath, const std::string& shaderCode) {
     //Compile shader
     auto shader = glCreateShader(shaderType);
-    glShaderSource(shader, 1, &shaderSource, nullptr);
+    auto shaderCodeStr = shaderCode.c_str();
+    glShaderSource(shader, 1, &shaderCodeStr, nullptr);
     glCompileShader(shader);
 
-    //Check for and display compilation errors
+    //Check for compilation errors
     int success;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
     if (!success) {
-        char log[LOG_LENGTH];
-        glGetShaderInfoLog(shader, LOG_LENGTH, nullptr, log);
+        char compileLog[LOG_LENGTH];
+        glGetShaderInfoLog(shader, LOG_LENGTH, nullptr, compileLog);
 
-        std::string shaderTypeName;
-        switch (shaderType) {
-        case GL_VERTEX_SHADER:
-            shaderTypeName = "Vertex";
-            break;
-
-        case GL_FRAGMENT_SHADER:
-            shaderTypeName = "Fragment";
-            break;
-
-        default:
-            break;
-        }
-
-        std::cerr << "ERROR: " << shaderTypeName << " shader compilation failed:\n"
-                  << log << "\n";
-        return boost::none;
+        std::stringstream errorMsg;
+        errorMsg << "Failed to compile " << shaderPath << "\n" << compileLog;
+        throw BuildError(errorMsg.str());
     }
 
     return shader;

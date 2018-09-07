@@ -1,6 +1,5 @@
 #pragma once
 #include <string>
-#include <memory>
 
 namespace gl {
 
@@ -12,15 +11,15 @@ class ShaderProgram
 {
 public:
     /**
-     * @brief New Factory function for loading, compiling, linking shaders
-     * to create a shader program.
+     * @brief ShaderProgram Loads, compiles, and links given shaders into a shader program.
      *
-     * @param vertexShaderPath Vertex shader filepath.
-     * @param fragmentShaderPath Vertex shader filepath.
-     * @return Shader program if successfully compiled and linked;
-     *         nullptr if compilation or link failed.
+     * Throws std::ios_base::failure if failed to open either file.
+     * Throws gl::BuildError if failed to compile or link shaders.
+     *
+     * @param vertexShaderPath Filepath of the vertex shader.
+     * @param fragmentShaderPath Filepath of the fragment shader.
      */
-    static std::unique_ptr<ShaderProgram> New(const std::string &vertexShaderPath, const std::string &fragmentShaderPath);
+    ShaderProgram(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
 
     ShaderProgram(const ShaderProgram&) = delete;
     ShaderProgram(ShaderProgram&&) = delete;
@@ -36,8 +35,6 @@ public:
     void setUniform4f(const std::string &name, float x, float y=0.0f, float z=0.0f, float w=0.0f);
 
 private:
-    ShaderProgram() = default;
-
     unsigned int id;
 };
 
