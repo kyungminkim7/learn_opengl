@@ -27,8 +27,8 @@ int main() {
     glViewport(0, 0, windowWidth, windowHeight);
     glfwSetFramebufferSizeCallback(window, &frameBufferSizeCb);
 
-    gl::ShaderProgram shaderProgram("../../learn_opengl/lessons/src/lesson3_applying_textures.vert",
-                                    "../../learn_opengl/lessons/src/lesson3_applying_textures.frag");
+    gl::ShaderProgram shaderProgram("../../learn_opengl/lessons/src/lesson3_texture_units.vert",
+                                    "../../learn_opengl/lessons/src/lesson3_texture_units.frag");
 
     //Setup vertex data
     std::array<float, 4 * 8> vertices = {
@@ -75,29 +75,60 @@ int main() {
     glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); //unbind after VAO since VAO records all ebo binds/unbinds
 
-    //Load & create a texture
-    unsigned int texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    //Load & create texture1
+    unsigned int texture0;
+    glGenTextures(1, &texture0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture0);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    int imgWidth, imgHeight, numImgChannels;
-    const auto imgFilepath = "../../learn_opengl/lessons/images/container.jpg";
-    auto img = stbi_load(imgFilepath, &imgWidth, &imgHeight, &numImgChannels, 0);
-    if (!img) {
-        std::cerr << "Failed to load img from file: " << imgFilepath << "\n";
-        return -1;
+    stbi_set_flip_vertically_on_load(true);
+    {
+        int imgWidth, imgHeight, numImgChannels;
+        const auto imgFilepath = "../../learn_opengl/lessons/images/container.jpg";
+        auto img = stbi_load(imgFilepath, &imgWidth, &imgHeight, &numImgChannels, 0);
+        if (!img) {
+            std::cerr << "Failed to load img from file: " << imgFilepath << "\n";
+            return -1;
+        }
+
+        glTexImage2D(GL_TEXTURE_2D,
+                     0, GL_RGB, imgWidth, imgHeight, 0, //Texture attributes
+                     GL_RGB, GL_UNSIGNED_BYTE, img);    //Src img attributes
+        glGenerateMipmap(GL_TEXTURE_2D);
+        stbi_image_free(img);
     }
 
-    glTexImage2D(GL_TEXTURE_2D,
-                 0, GL_RGB, imgWidth, imgHeight, 0, //Texture attributes
-                 GL_RGB, GL_UNSIGNED_BYTE, img);    //Src img attributes
-    glGenerateMipmap(GL_TEXTURE_2D);
-    stbi_image_free(img);
+    //Load & create texture2;
+    unsigned int texture1;
+    glGenTextures(1, &texture1);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, texture1);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    {
+        int imgWidth, imgHeight, numImgChannels;
+        const auto imgFilepath = "../../learn_opengl/lessons/images/awesomeface.png";
+        auto img = stbi_load(imgFilepath, &imgWidth, &imgHeight, &numImgChannels, 0);
+        if (!img) {
+            std::cerr << "Failed to load img from file: " << imgFilepath << "\n";
+            return -1;
+        }
+
+        glTexImage2D(GL_TEXTURE_2D,
+                     0, GL_RGB, imgWidth, imgHeight, 0, //Texture attributes
+                     GL_RGBA, GL_UNSIGNED_BYTE, img);    //Src img attributes
+        glGenerateMipmap(GL_TEXTURE_2D);
+        stbi_image_free(img);
+    }
 
     shaderProgram.use();
+    shaderProgram.setUniform1i("texture0", 0);
+    shaderProgram.setUniform1i("texture1", 1);
 
     while (!glfwWindowShouldClose(window)) {
         processInput(window);
@@ -105,7 +136,11 @@ int main() {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glBindTexture(GL_TEXTURE_2D, texture);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture0);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, texture1);
+
         glBindVertexArray(vao);
         glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 
