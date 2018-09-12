@@ -1,3 +1,7 @@
+/// Follows "Textures" lesson.
+/// Loads two images as textures and mixes them over a square.
+/// Press the UP/DOWN key to vary the amount of texture mixture;
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <gl_util/glfw_util.h>
@@ -6,13 +10,15 @@
 #include <iostream>
 #include <array>
 
+float texMix = 0.2;
+
 template<typename T, std::size_t N>
 unsigned int arrayDataSize(const std::array<T,N>& a) {
     return N * sizeof(T);
 }
 
 void frameBufferSizeCb(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow *window);
+void processInput(GLFWwindow *window, gl::ShaderProgram* shaderProgram);
 
 int main() {
     //Initialize system and window
@@ -30,12 +36,14 @@ int main() {
     gl::ShaderProgram shaderProgram("../../learn_opengl/lessons/src/lesson3_texture_units.vert",
                                     "../../learn_opengl/lessons/src/lesson3_texture_units.frag");
 
+    constexpr std::size_t numAttributes = 8;
+
     //Setup vertex data
-    std::array<float, 4 * 8> vertices = {
-        //pos                //colors            //texture coords
-       -0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   0.0f, 1.0f, //Top left
-        0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   1.0f, 1.0f, //Top right
-        0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, //Bottom right
+    std::array<float, 4 * numAttributes> vertices = {
+        //pos                //colors            //tex coord
+       -0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   0.0f, 2.0f, //Top left
+        0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   2.0f, 2.0f, //Top right
+        0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   2.0f, 0.0f, //Bottom right
        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f  //Bottom left
     };
 
@@ -58,16 +66,18 @@ int main() {
     glBufferData(GL_ARRAY_BUFFER, arrayDataSize(vertices), vertices.data(), GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, arrayDataSize(indices), indices.data(), GL_STATIC_DRAW);
 
+    auto stride = numAttributes * sizeof(float);
+
     //Position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void*>(0));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(0));
     glEnableVertexAttribArray(0);
 
     //Color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
     //Texture coordinate attribute
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), reinterpret_cast<void*>(6 * sizeof(float)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, reinterpret_cast<void*>(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
 
     //Unbind
@@ -78,8 +88,10 @@ int main() {
     //Load & create texture1
     unsigned int texture0;
     glGenTextures(1, &texture0);
-    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture0);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -104,7 +116,6 @@ int main() {
     //Load & create texture2;
     unsigned int texture1;
     glGenTextures(1, &texture1);
-    glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, texture1);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -129,9 +140,10 @@ int main() {
     shaderProgram.use();
     shaderProgram.setUniform1i("texture0", 0);
     shaderProgram.setUniform1i("texture1", 1);
+    shaderProgram.setUniform1f("texMix", texMix);
 
     while (!glfwWindowShouldClose(window)) {
-        processInput(window);
+        processInput(window, &shaderProgram);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -160,8 +172,16 @@ void frameBufferSizeCb(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-void processInput(GLFWwindow *window) {
+void processInput(GLFWwindow *window, gl::ShaderProgram* shaderProgram) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
+    } else if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+        texMix += (texMix < 1 ? 0.1 : 0);
+        shaderProgram->use();
+        shaderProgram->setUniform1f("texMix", texMix);
+    } else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+        texMix -= (texMix > 0 ? 0.1 : 0);
+        shaderProgram->use();
+        shaderProgram->setUniform1f("texMix", texMix);
     }
 }

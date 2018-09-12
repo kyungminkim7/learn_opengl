@@ -1,5 +1,7 @@
-///Helper functions for GLFW and GLAD.
 #pragma once
+
+///Helper functions for GLFW and GLAD.
+
 #include <string>
 
 class GLFWwindow;

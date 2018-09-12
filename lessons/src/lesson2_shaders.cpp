@@ -1,3 +1,6 @@
+/// Follows "Shaders" lesson.
+/// Creates a multicolored triangle using shaders.
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <gl_util/glfw_util.h>
