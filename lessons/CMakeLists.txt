@@ -9,9 +9,17 @@ find_package(OpenGL REQUIRED)
 
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
 
-link_libraries(glad glfw gl_util ${BOOST_LIBRARIES} stb)
+link_libraries(
+    glad
+    glfw
+    gl_util
+    ${BOOST_LIBRARIES}
+    stb
+    glm
+)
 
 add_executable(lesson1_window "src/lesson1_window.cpp")
 add_executable(lesson1_exercise "src/lesson1_exercise.cpp")
 add_executable(lesson2_shaders "src/lesson2_shaders.cpp")
 add_executable(lesson3_textures "src/lesson3_textures.cpp")
+add_executable(lesson4_transformations "src/lesson4_transformations.cpp")
