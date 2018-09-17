@@ -1,9 +1,12 @@
 #include <gl_util/shader_program.h>
-#include <gl_util/gl_exception.h>
-#include <glad/glad.h>
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
+
+#include <glad/glad.h>
+
+#include <gl_util/gl_exception.h>
 
 namespace {
 constexpr unsigned int LOG_LENGTH = 1024;

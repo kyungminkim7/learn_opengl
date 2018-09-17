@@ -1,7 +1,9 @@
 #include <gl_util/glfw_util.h>
+
+#include <iostream>
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <iostream>
 
 namespace gl {
 

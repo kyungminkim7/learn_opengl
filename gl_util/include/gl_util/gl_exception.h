@@ -1,7 +1,7 @@
 #pragma once
 #include <exception>
-#include <string>
 #include <stdexcept>
+#include <string>
 
 namespace gl {
 
