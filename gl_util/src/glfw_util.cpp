@@ -15,16 +15,6 @@ void initializeGLFW(unsigned int contextMajorVersion, unsigned int contextMinorV
     std::cout << "Initialized GLFW.\n";
 }
 
-bool initializeGLAD() {
-    if (gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
-        std::cout << "Initialized GLAD.\n";
-        return true;
-    } else {
-        std::cerr << "Failed to initialize GLAD.\n";
-        return false;
-    }
-}
-
 GLFWwindow* createWindow(unsigned int width, unsigned int height, std::string title) {
     auto window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
 
@@ -37,4 +27,14 @@ GLFWwindow* createWindow(unsigned int width, unsigned int height, std::string ti
     return window;
 }
 
+bool initializeGLAD() {
+    if (gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
+        std::cout << "Initialized GLAD.\n";
+        return true;
+    } else {
+        std::cerr << "Failed to initialize GLAD.\n";
+        return false;
+    }
 }
+
+} // namespace gl

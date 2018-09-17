@@ -11,11 +11,11 @@
 namespace {
 constexpr unsigned int LOG_LENGTH = 1024;
 
-///Throws std::ios_base::failure if failed to read from file.
+//Throws std::ios_base::failure if failed to read from file.
 std::string readFile(const std::string& filepath) {
     std::ifstream file(filepath);
 
-    //Check for valid file
+    // Check for valid file
     if (!file.is_open()) {
         std::stringstream errorMsg;
         errorMsg << "Failed to open file: " << filepath;
@@ -23,22 +23,22 @@ std::string readFile(const std::string& filepath) {
     }
     std::cout << "Found file: " << filepath << "\n";
 
-    //Read file
+    // Read file
     std::stringstream filestream;
     filestream << file.rdbuf();
 
     return filestream.str();
 }
 
-///Throws gl::BuildError if failed to compile shader.
+//Throws gl::BuildError if failed to compile shader.
 unsigned int compileShader(int shaderType, const std::string& shaderPath, const std::string& shaderCode) {
-    //Compile shader
+    // Compile shader
     auto shader = glCreateShader(shaderType);
     auto shaderCodeStr = shaderCode.c_str();
     glShaderSource(shader, 1, &shaderCodeStr, nullptr);
     glCompileShader(shader);
 
-    //Check for compilation errors
+    // Check for compilation errors
     int success;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
     if (!success) {
@@ -59,12 +59,12 @@ ShaderProgram::ShaderProgram(const std::string &vertexShaderPath, const std::str
     auto vertexShaderCode = readFile(vertexShaderPath);
     auto fragmentShaderCode = readFile(fragmentShaderPath);
 
-    //Compile shaders
+    // Compile shaders
     auto vertexShader = compileShader(GL_VERTEX_SHADER, vertexShaderPath, vertexShaderCode);
     auto fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentShaderPath, fragmentShaderCode);
     std::cout << "Successfully compiled vertex & fragment shaders.\n";
 
-    //Link shaders
+    // Link shaders
     this->id = glCreateProgram();
     glAttachShader(this->id, vertexShader);
     glAttachShader(this->id, fragmentShader);
@@ -113,4 +113,5 @@ void ShaderProgram::setUniform4f(const std::string &name, float x, float y, floa
 void ShaderProgram::setUniformMatrix4fv(const std::string &name, const glm::mat4 &m) {
     glUniformMatrix4fv(glGetUniformLocation(this->id, name.c_str()), 1, GL_FALSE, &m[0][0]);
 }
-}
+
+} // namespace gl
