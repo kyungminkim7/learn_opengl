@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <glm/glm.hpp>
 
 namespace gl {
 
@@ -33,6 +34,7 @@ public:
     void setUniform1f(const std::string &name, float value);
     void setUniform3f(const std::string &name, float x, float y=0.0f, float z=0.0f);
     void setUniform4f(const std::string &name, float x, float y=0.0f, float z=0.0f, float w=0.0f);
+    void setUniformMatrix4fv(const std::string &name, const glm::mat4 &m);
 
 private:
     unsigned int id;

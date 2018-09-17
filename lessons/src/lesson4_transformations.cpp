@@ -1,14 +1,20 @@
-/// Follows "Textures" lesson.
-/// Loads two images as textures and mixes them over a square.
-/// Press the UP/DOWN key to vary the amount of texture mixture;
+/// Follows "Transformations" lesson.
+/// Draws 2 boxes that:
+///     1. rotates over time.
+///     2. changes scale over time.
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <gl_util/glfw_util.h>
-#include <gl_util/shader_program.h>
-#include <stb_image.h>
 #include <iostream>
 #include <array>
+
+#include <GLFW/glfw3.h>
+#include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <stb_image.h>
+
+#include <gl_util/glfw_util.h>
+#include <gl_util/shader_program.h>
 
 float texMix = 0.2;
 
@@ -17,15 +23,15 @@ unsigned int arrayDataSize(const std::array<T,N>& a) {
     return N * sizeof(T);
 }
 
-void frameBufferSizeCb(GLFWwindow* window, int width, int height);
+void frameBufferSizeCb(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window, gl::ShaderProgram* shaderProgram);
 
 int main() {
-    //Initialize system and window
+    //Initialize OpenGL and window
     gl::initializeGLFW(3, 3);
 
     const unsigned int windowWidth = 800, windowHeight = 600;
-    auto window = gl::createWindow(windowWidth, windowHeight, "Lesson 3 - Textures");
+    auto window = gl::createWindow(windowWidth, windowHeight, "Lesson 4 - Transformations");
     if (window == nullptr) return -1;
 
     if (!gl::initializeGLAD()) return -1;
@@ -33,17 +39,17 @@ int main() {
     glViewport(0, 0, windowWidth, windowHeight);
     glfwSetFramebufferSizeCallback(window, &frameBufferSizeCb);
 
-    gl::ShaderProgram shaderProgram("../../learn_opengl/lessons/src/lesson3_texture_units.vert",
-                                    "../../learn_opengl/lessons/src/lesson3_texture_units.frag");
+    gl::ShaderProgram shaderProgram("../../learn_opengl/lessons/src/lesson4_transformations.vert",
+                                    "../../learn_opengl/lessons/src/lesson4_transformations.frag");
 
     constexpr std::size_t numAttributes = 8;
 
     //Setup vertex data
     std::array<float, 4 * numAttributes> vertices = {
         //pos                //colors            //tex coord
-       -0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   0.0f, 2.0f, //Top left
-        0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   2.0f, 2.0f, //Top right
-        0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   2.0f, 0.0f, //Bottom right
+       -0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   0.0f, 1.0f, //Top left
+        0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   1.0f, 1.0f, //Top right
+        0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, //Bottom right
        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f  //Bottom left
     };
 
@@ -89,9 +95,6 @@ int main() {
     unsigned int texture0;
     glGenTextures(1, &texture0);
     glBindTexture(GL_TEXTURE_2D, texture0);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -153,7 +156,22 @@ int main() {
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture1);
 
+        //Update 1st box pose
+        glm::mat4 T(1.0f);
+        T = glm::translate(T, glm::vec3(0.5f, -0.5f, 0.0f));
+        T = glm::rotate(T, static_cast<float>(glfwGetTime()), glm::vec3(0.0f, 0.0f, 1.0f));
+        T = glm::scale(T, glm::vec3(0.3f, 0.3f, 0.3f));
+        shaderProgram.setUniformMatrix4fv("transform", T);
+
         glBindVertexArray(vao);
+        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+
+        //Update 2nd box pose
+        T = glm::translate(glm::mat4(1.0f), glm::vec3(-0.5f, 0.5f, 0.0f));
+        float scale = std::sin(glfwGetTime());
+        T = glm::scale(T, glm::vec3(scale, scale, scale));
+        shaderProgram.setUniformMatrix4fv("transform", T);
+
         glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 
         glfwSwapBuffers(window);
@@ -168,7 +186,7 @@ int main() {
     return 0;
 }
 
-void frameBufferSizeCb(GLFWwindow* window, int width, int height) {
+void frameBufferSizeCb(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 

@@ -19,6 +19,7 @@ target_link_libraries(gl_util
     PUBLIC
         glad
         glfw
+        glm
 )
 
 target_compile_features(gl_util
