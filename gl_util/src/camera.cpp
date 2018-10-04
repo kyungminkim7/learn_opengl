@@ -16,7 +16,7 @@ Camera::Camera(float maxFov_deg, float aspectRatioWidthToHeight, float nearPlane
     maxFov_deg(maxFov_deg), currentFov_deg(maxFov_deg), aspectRatioWidthToHeight(aspectRatioWidthToHeight),
     nearPlane(nearPlane), farPlane(farPlane),
     cursorSensitivity(0.1f), scrollSensitivity(2.0f), linearSpeed(10.0f),
-    yawAxis(0.0f, 0.0f, 1.0f), pitchAxis(0.0f, 1.0f, 0.0f),
+    horizontalRotationAxis(0.0f, 0.0f, 1.0f),
     lastUpdateTimepoint(std::chrono::system_clock::now()) {}
 
 void Camera::onUpdate() {
@@ -77,8 +77,8 @@ void Camera::onCursorMoved(GLFWwindow *window, double cursorX, double cursorY) {
     auto deltaPitch = static_cast<float>(glm::radians(yOffset * cursorSensitivity));
 
     auto position = this->getPosition();
-    this->pose = glm::rotate(glm::rotate(glm::mat4(1.0f), deltaPitch, this->pitchAxis),
-                             deltaYaw, this->yawAxis) * this->pose;
+    this->pose = glm::rotate(glm::rotate(glm::mat4(1.0f), deltaYaw, this->horizontalRotationAxis),
+                             deltaPitch, this->getOrientationY()) * this->pose;
     this->setPosition(position);
 
     this->lastCursorX = cursorX;
@@ -169,9 +169,8 @@ void Camera::setScrollSensitivity(float scrollSensitivity) {
     this->scrollSensitivity = scrollSensitivity;
 }
 
-void Camera::setRotationAxes(const glm::vec3& yawAxis, const glm::vec3& pitchAxis) {
-    this->yawAxis = yawAxis;
-    this->pitchAxis = pitchAxis;
+void Camera::setHorizontalRotationAxis(const glm::vec3& yawAxis) {
+    this->horizontalRotationAxis = yawAxis;
 }
 
 void Camera::setOrientation(const glm::vec3 &orientationX,

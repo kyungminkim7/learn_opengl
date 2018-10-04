@@ -9,7 +9,6 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #include <stb_image.h>
 
 #include <gl_util/camera.h>
@@ -32,7 +31,7 @@ int main() {
     // Initialize OpenGL and window
     gl::initializeGLFW(3, 3);
 
-    auto window = gl::createWindow(800, 600, "Lesson 4 - Transformations");
+    auto window = gl::createWindow(800, 600, "Lesson 6 - Camera");
     if (window == nullptr) return -1;
 
     if (!gl::initializeGLAD()) return -1;
@@ -58,7 +57,7 @@ int main() {
     cam->setPosition(glm::vec3(0.0f, 0.0f, 3.0f));
     cam->setLookAtPoint(glm::vec3(0.0f));
     cam->setNormalDirection(glm::vec3(0.0f, 1.0f, 0.0f));
-    cam->setRotationAxes(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+    cam->setHorizontalRotationAxis(glm::vec3(0.0f, 1.0f, 0.0f));
 
     gl::ShaderProgram shaderProgram("../../learn_opengl/lessons/src/lesson5_coordinate_systems.vert",
                                     "../../learn_opengl/lessons/src/lesson5_coordinate_systems.frag");

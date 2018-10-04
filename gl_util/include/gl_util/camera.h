@@ -13,6 +13,8 @@ namespace gl {
 ///
 /// \brief First person shooter camera with a perspective view.
 ///
+/// This camera pitches and yaws but does not allow roll.
+///
 class Camera
 {
 public:
@@ -23,11 +25,10 @@ public:
     ///     1. mouse sensitivity  = 0.1
     ///     2. scroll sensitivity = 2.0
     ///     3. movement speed     = 10.0 m/s
-    ///     4. yaw axis           = {0, 0, 1}
-    ///     5. pitch axis         = {0, 1, 0}
-    ///     6. Look at direction  = {1, 0, 0}
-    ///     7. Normal direction   = {0, 0, 1}
-    ///     8. Current fov        = max fov
+    ///     4. rotation axis      = {0, 0, 1}
+    ///     5. Look at direction  = {1, 0, 0}
+    ///     6. Normal direction   = {0, 0, 1}
+    ///     7. Current fov        = max fov
     ///
     /// \param maxFov_deg Camera field of view in degrees.
     /// \param aspectRatioWidthToHeight
@@ -140,7 +141,7 @@ public:
     ///
     void setScrollSensitivity(float scrollSensitivity);
 
-    void setRotationAxes(const glm::vec3& yawAxis, const glm::vec3& pitchAxis);
+    void setHorizontalRotationAxis(const glm::vec3& horizontalRotationAxis);
 
 private:
     void setOrientation(const glm::vec3& orientationX,
@@ -163,8 +164,7 @@ private:
     float linearSpeed; ///< Speed of each linear velocity component (m/s)
     glm::vec3 linearVelocity {0.0f};
 
-    glm::vec3 yawAxis;
-    glm::vec3 pitchAxis;
+    glm::vec3 horizontalRotationAxis;
 
     glm::mat4 pose {1.0f};
 
