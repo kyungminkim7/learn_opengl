@@ -12,7 +12,36 @@
 namespace {
 constexpr unsigned int LOG_LENGTH = 1024;
 
-//Throws std::ios_base::failure if failed to read from file.
+///
+/// \brief readFile Reads and returns a file's contents.
+/// \param filepath Filepath of the file to read from.
+/// \return File contents.
+/// \exception std::ios_base::failure Failed to open the file.
+///
+std::string readFile(const std::string &filepath);
+
+///
+/// \brief compileShader Compiles a shader.
+/// \param shaderType Type of shader to be created.
+/// \param shaderPath Filepath of the shader's source code.
+/// \return Compiled shader object.
+/// \exception gl::BuildError Failed to compile shader.
+///
+unsigned int compileShader(int shaderType, const std::string& shaderPath);
+
+///
+/// \brief linkShaderProgram Links shaders to create a shader program.
+///
+/// This function does NOT delete the given shaders
+///
+/// \param vertexShader Compiled vertex shader object.
+/// \param fragmentShader Compiled fragment shader object.
+/// \return Linked shader program.
+/// \exception gl::BuildError Failed to link shader.
+///                           This function does NOT delete the given shaders.
+///
+unsigned int linkShaderProgram(unsigned int vertexShader, unsigned int fragmentShader);
+
 std::string readFile(const std::string& filepath) {
     std::ifstream file(filepath);
 
@@ -31,8 +60,9 @@ std::string readFile(const std::string& filepath) {
     return filestream.str();
 }
 
-//Throws gl::BuildError if failed to compile shader.
-unsigned int compileShader(int shaderType, const std::string& shaderPath, const std::string& shaderCode) {
+unsigned int compileShader(int shaderType, const std::string& shaderPath) {
+    auto shaderCode = readFile(shaderPath);
+
     // Compile shader
     auto shader = glCreateShader(shaderType);
     auto shaderCodeStr = shaderCode.c_str();
@@ -48,38 +78,59 @@ unsigned int compileShader(int shaderType, const std::string& shaderPath, const 
 
         std::stringstream errorMsg;
         errorMsg << "Failed to compile " << shaderPath << "\n" << compileLog;
+
+        glDeleteShader(shader);
+
         throw gl::BuildError(errorMsg.str());
     }
 
     return shader;
 }
-}
 
-namespace gl {
-ShaderProgram::ShaderProgram(const std::string &vertexShaderPath, const std::string &fragmentShaderPath) {
-    auto vertexShaderCode = readFile(vertexShaderPath);
-    auto fragmentShaderCode = readFile(fragmentShaderPath);
-
-    // Compile shaders
-    auto vertexShader = compileShader(GL_VERTEX_SHADER, vertexShaderPath, vertexShaderCode);
-    auto fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentShaderPath, fragmentShaderCode);
-    std::cout << "Successfully compiled vertex & fragment shaders.\n";
-
-    // Link shaders
-    this->id = glCreateProgram();
-    glAttachShader(this->id, vertexShader);
-    glAttachShader(this->id, fragmentShader);
+unsigned int linkShaderProgram(unsigned int vertexShader, unsigned int fragmentShader) {
+    auto shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
 
     int success;
-    glLinkProgram(this->id);
-    glGetProgramiv(this->id, GL_LINK_STATUS, &success);
+    glLinkProgram(shaderProgram);
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
     if (!success) {
         char linkLog[LOG_LENGTH];
-        glGetProgramInfoLog(this->id, LOG_LENGTH, nullptr, linkLog);
+        glGetProgramInfoLog(shaderProgram, LOG_LENGTH, nullptr, linkLog);
 
         std::stringstream errorMsg;
         errorMsg << "Failed to link shaders\n" << linkLog;
+
         throw gl::BuildError(errorMsg.str());
+    }
+
+    return shaderProgram;
+}
+
+} // namespace
+
+namespace gl {
+ShaderProgram::ShaderProgram(const std::string &vertexShaderPath, const std::string &fragmentShaderPath) {
+    // Compile shaders
+    auto vertexShader = compileShader(GL_VERTEX_SHADER, vertexShaderPath);
+
+    unsigned int fragmentShader;
+    try {
+        fragmentShader = compileShader(GL_FRAGMENT_SHADER, fragmentShaderPath);
+    } catch (std::exception&) {
+        glDeleteShader(vertexShader);
+        throw;
+    }
+    std::cout << "Successfully compiled vertex & fragment shaders.\n";
+
+    // Link shaders
+    try {
+        this->id = linkShaderProgram(vertexShader, fragmentShader);
+    } catch (std::exception&) {
+        glDeleteShader(vertexShader);
+        glDeleteShader(fragmentShader);
+        throw;
     }
     std::cout << "Successfully linked vertex & fragment shaders.\n";
 
