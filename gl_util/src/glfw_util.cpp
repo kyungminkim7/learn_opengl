@@ -29,6 +29,7 @@ GLFWwindow* createWindow(unsigned int width, unsigned int height, std::string ti
 
 bool initializeGLAD() {
     if (gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
+        glfwSwapInterval(1);
         std::cout << "Initialized GLAD.\n";
         return true;
     } else {

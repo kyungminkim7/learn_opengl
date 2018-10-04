@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-#include <glm/glm.hpp>
+#include <glm/fwd.hpp>
 
 namespace gl {
 
@@ -35,10 +35,10 @@ public:
     void use();
 
     /// \name Uniforms
-    ///@{
     /// Sets uniform value on this shader program. User must call ShaderProgram::use() before
     /// the 1st call to a ShaderProgram::setUniform...() function to ensure that they are
     /// activating the right shader program.
+    ///@{
     void setUniform1b(const std::string &name, bool value);
     void setUniform1i(const std::string &name, int value);
     void setUniform1f(const std::string &name, float value);

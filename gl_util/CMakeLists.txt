@@ -7,6 +7,7 @@ find_package(glfw3 REQUIRED)
 add_library(gl_util SHARED
     "src/glfw_util.cpp"
     "src/shader_program.cpp"
+    "src/camera.cpp"
 )
 
 target_include_directories(gl_util

@@ -5,6 +5,7 @@
 #include <sstream>
 
 #include <glad/glad.h>
+#include <glm/mat4x4.hpp>
 
 #include <gl_util/gl_exception.h>
 
