@@ -1,9 +1,10 @@
 #pragma once
 
+#include <gl_util/game_object.h>
+
 #include <chrono>
 
 #include <GLFW/glfw3.h>
-#include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 
 namespace gl {
@@ -15,8 +16,7 @@ namespace gl {
 ///
 /// This camera pitches and yaws but does not allow roll.
 ///
-class Camera
-{
+class Camera : public GameObject {
 public:
     ///
     /// \brief Camera constructor.
@@ -26,9 +26,9 @@ public:
     ///     2. scroll sensitivity = 2.0
     ///     3. movement speed     = 10.0 m/s
     ///     4. rotation axis      = {0, 0, 1}
-    ///     5. Look at direction  = {1, 0, 0}
-    ///     6. Normal direction   = {0, 0, 1}
-    ///     7. Current fov        = max fov
+    ///     5. look at direction  = {1, 0, 0}
+    ///     6. normal direction   = {0, 0, 1}
+    ///     7. current fov        = max fov
     ///
     /// \param maxFov_deg Camera field of view in degrees.
     /// \param aspectRatioWidthToHeight
@@ -40,9 +40,11 @@ public:
     ///
     /// \brief Updates the camera state.
     ///
-    /// User should call this on every iteration of the game loop.
+    /// This should be called on every iteration of the game loop.
     ///
-    void onUpdate();
+    /// \param updateDuration Elapsed time since the last frame.
+    ///
+    void onUpdate(std::chrono::duration<float> updateDuration) override;
 
     ///
     /// \brief Camera movement controls through keyboard input.
@@ -60,7 +62,7 @@ public:
     /// \param action GLFW_PRESS, GLFW_RELEASE or GLFW_REPEAT.
     /// \param mods Bit field describing which modifier keys were held down.
     ///
-    void onKeyInput(GLFWwindow *window, int key, int action, int mods);
+    void onKeyInput(GLFWwindow *window, int key, int action, int mods) override;
 
     ///
     /// \brief Controls camera through cursor movement.
@@ -69,10 +71,10 @@ public:
     /// The sensitivity of this movement may be modified through Camera::setCursorSensitivity().
     ///
     /// \param window The window that received the event.
-    /// \param cursorX The new mouse x-coordinate, relative to the left edge of the client area.
-    /// \param cursorY The new mouse y-coordinate, relative to the top edge of the client area.
+    /// \param cursorX The new cursor x-coordinate, relative to the left edge of the client area.
+    /// \param cursorY The new cursor y-coordinate, relative to the top edge of the client area.
     ///
-    void onCursorMoved(GLFWwindow *window, double cursorX, double cursorY);
+    void onCursorMoved(GLFWwindow *window, double cursorX, double cursorY) override;
 
     ///
     /// \brief onScrollInput Controls camera zoom through scrolling.
@@ -80,10 +82,7 @@ public:
     /// \param xOffset The scroll offset along the x-axis.
     /// \param yOffset The scroll offset along the y-axis.
     ///
-    void onScrollInput(GLFWwindow *window, double xOffset, double yOffset);
-
-    void setPosition(const glm::vec3& position);
-    glm::vec3 getPosition() const;
+    void onScrollInput(GLFWwindow *window, double xOffset, double yOffset) override;
 
     /// \name Look At
     ///
@@ -144,14 +143,6 @@ public:
     void setHorizontalRotationAxis(const glm::vec3& horizontalRotationAxis);
 
 private:
-    void setOrientation(const glm::vec3& orientationX,
-                        const glm::vec3& orientationY,
-                        const glm::vec3& orientationZ);
-
-    glm::vec3 getOrientationX() const;
-    glm::vec3 getOrientationY() const;
-    glm::vec3 getOrientationZ() const;
-
     float maxFov_deg;
     float currentFov_deg;
     float aspectRatioWidthToHeight;
@@ -166,20 +157,13 @@ private:
 
     glm::vec3 horizontalRotationAxis;
 
-    glm::mat4 pose {1.0f};
-
-    mutable glm::mat4 projectionMatrix {1.0f};
-    mutable glm::mat4 viewMatrix {1.0f};
-
-    mutable bool projectionMatrixValid = false;
-    mutable bool viewMatrixValid = false;
+    glm::mat4 projectionMatrix {1.0f};
+    glm::mat4 viewMatrix {1.0f};
 
     bool firstCursorPositionReceived = false;
 
     double lastCursorX = 0.0;
     double lastCursorY = 0.0;
-
-    std::chrono::system_clock::time_point lastUpdateTimepoint;
 };
 
 } // namespace gl

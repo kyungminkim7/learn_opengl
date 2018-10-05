@@ -8,6 +8,7 @@ add_library(gl_util SHARED
     "src/glfw_util.cpp"
     "src/shader_program.cpp"
     "src/camera.cpp"
+    "src/game_object.cpp"
 )
 
 target_include_directories(gl_util
@@ -28,6 +29,7 @@ target_compile_features(gl_util
         cxx_nullptr
         cxx_noexcept
         cxx_override
+        cxx_uniform_initialization
     PRIVATE
         cxx_auto_type
         cxx_constexpr

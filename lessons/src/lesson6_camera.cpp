@@ -225,7 +225,13 @@ int main() {
     shaderProgram.setUniform1i("texture1", 1);
     shaderProgram.setUniform1f("texMix", 0.2);
 
+    auto lastUpdateTime = std::chrono::system_clock::now();
+
     while (!glfwWindowShouldClose(window)) {
+        auto currentUpdateTime = std::chrono::system_clock::now();
+        auto updateDuration = currentUpdateTime - lastUpdateTime;
+        lastUpdateTime = currentUpdateTime;
+
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -237,7 +243,7 @@ int main() {
         glBindVertexArray(vao);
 
         // Update camera properties
-        cam->onUpdate();
+        cam->onUpdate(updateDuration);
         shaderProgram.setUniformMatrix4fv("view", cam->getViewMatrix());
         shaderProgram.setUniformMatrix4fv("projection", cam->getProjectionMatrix());
 

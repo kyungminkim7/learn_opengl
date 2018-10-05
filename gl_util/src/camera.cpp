@@ -16,20 +16,12 @@ Camera::Camera(float maxFov_deg, float aspectRatioWidthToHeight, float nearPlane
     maxFov_deg(maxFov_deg), currentFov_deg(maxFov_deg), aspectRatioWidthToHeight(aspectRatioWidthToHeight),
     nearPlane(nearPlane), farPlane(farPlane),
     cursorSensitivity(0.1f), scrollSensitivity(2.0f), linearSpeed(10.0f),
-    horizontalRotationAxis(0.0f, 0.0f, 1.0f),
-    lastUpdateTimepoint(std::chrono::system_clock::now()) {}
+    horizontalRotationAxis(0.0f, 0.0f, 1.0f) {}
 
-void Camera::onUpdate() {
-    auto currentTimepoint = std::chrono::system_clock::now();
-
-    using sec_f = std::chrono::duration<float>;
-    auto updateTime = std::chrono::duration_cast<sec_f>(currentTimepoint - lastUpdateTimepoint).count();
-
+void Camera::onUpdate(std::chrono::duration<float> updateDuration) {
     if (glm::length2(this->linearVelocity) > 0.0f) {
-        this->setPosition(this->pose * glm::vec4(this->linearVelocity * updateTime, 1.0f));
+        this->translateInLocalFrame(this->linearVelocity * updateDuration.count());
     }
-
-    this->lastUpdateTimepoint = currentTimepoint;
 }
 
 void Camera::onKeyInput(GLFWwindow *window, int key, int action, int mods) {
@@ -76,10 +68,8 @@ void Camera::onCursorMoved(GLFWwindow *window, double cursorX, double cursorY) {
     auto deltaYaw = static_cast<float>(glm::radians(-xOffset * cursorSensitivity));
     auto deltaPitch = static_cast<float>(glm::radians(yOffset * cursorSensitivity));
 
-    auto position = this->getPosition();
-    this->pose = glm::rotate(glm::rotate(glm::mat4(1.0f), deltaYaw, this->horizontalRotationAxis),
-                             deltaPitch, this->getOrientationY()) * this->pose;
-    this->setPosition(position);
+    this->rotate(deltaYaw, this->horizontalRotationAxis)
+            .rotate(deltaPitch, this->getOrientationY());
 
     this->lastCursorX = cursorX;
     this->lastCursorY = cursorY;
@@ -88,16 +78,6 @@ void Camera::onCursorMoved(GLFWwindow *window, double cursorX, double cursorY) {
 void Camera::onScrollInput(GLFWwindow *window, double xOffset, double yOffset) {
     this->setCurrentFov(this->currentFov_deg - this->scrollSensitivity * yOffset);
 }
-
-void Camera::setPosition(const glm::vec3& position) {
-    this->pose[3][0] = position.x;
-    this->pose[3][1] = position.y;
-    this->pose[3][2] = position.z;
-
-    this->viewMatrixValid = false;
-}
-
-glm::vec3 Camera::getPosition() const {return glm::column(this->pose, 3);}
 
 void Camera::setLookAtPoint(const glm::vec3& lookAtPoint) {
     this->setLookAtDirection(lookAtPoint - this->getPosition());
@@ -120,14 +100,9 @@ void Camera::setNormalDirection(const glm::vec3 &normalDirection) {
 }
 
 glm::mat4 Camera::getViewMatrix() const {
-    if (!this->viewMatrixValid) {
-        this->viewMatrix = glm::lookAt(this->getPosition(),
-                                       this->getPosition() + this->getOrientationX(),
-                                       this->getOrientationZ());
-        this->viewMatrixValid = true;
-    }
-
-    return this->viewMatrix;
+    return glm::lookAt(this->getPosition(),
+                       this->getPosition() + this->getOrientationX(),
+                       this->getOrientationZ());;
 }
 
 void Camera::setMaxFov(float fov_deg) {
@@ -142,19 +117,12 @@ void Camera::setCurrentFov(float fov_deg) {
     } else {
         this->currentFov_deg = fov_deg;
     }
-
-    this->projectionMatrixValid = false;
 }
 
 glm::mat4 Camera::getProjectionMatrix() const {
-    if (!this->projectionMatrixValid) {
-        this->projectionMatrix = glm::perspective(glm::radians(currentFov_deg),
-                                                  aspectRatioWidthToHeight,
-                                                  nearPlane, farPlane);
-        this->projectionMatrixValid = true;
-    }
-
-    return this->projectionMatrix;
+    return glm::perspective(glm::radians(currentFov_deg),
+                            aspectRatioWidthToHeight,
+                            nearPlane, farPlane);
 }
 
 void Camera::setLinearSpeed(float linearSpeed) {
@@ -172,27 +140,5 @@ void Camera::setScrollSensitivity(float scrollSensitivity) {
 void Camera::setHorizontalRotationAxis(const glm::vec3& yawAxis) {
     this->horizontalRotationAxis = yawAxis;
 }
-
-void Camera::setOrientation(const glm::vec3 &orientationX,
-                            const glm::vec3 &orientationY,
-                            const glm::vec3 &orientationZ) {
-    this->pose[0][0] = orientationX.x;
-    this->pose[0][1] = orientationX.y;
-    this->pose[0][2] = orientationX.z;
-
-    this->pose[1][0] = orientationY.x;
-    this->pose[1][1] = orientationY.y;
-    this->pose[1][2] = orientationY.z;
-
-    this->pose[2][0] = orientationZ.x;
-    this->pose[2][1] = orientationZ.y;
-    this->pose[2][2] = orientationZ.z;
-
-    this->viewMatrixValid = false;
-}
-
-glm::vec3 Camera::getOrientationX() const {return glm::column(this->pose, 0);}
-glm::vec3 Camera::getOrientationY() const {return glm::column(this->pose, 1);}
-glm::vec3 Camera::getOrientationZ() const {return glm::column(this->pose, 2);}
 
 } // namespace gl

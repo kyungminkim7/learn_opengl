@@ -168,14 +168,20 @@ int main() {
     glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); //unbind after VAO since VAO records all ebo binds/unbinds
 
+    auto lastUpdateTime = std::chrono::system_clock::now();
+
     while (!glfwWindowShouldClose(window)) {
+        auto currentUpdateTime = std::chrono::system_clock::now();
+        auto updateDuration = currentUpdateTime - lastUpdateTime;
+        lastUpdateTime = currentUpdateTime;
+
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         objectShader.use();
 
         // Update camera
-        cam->onUpdate();
+        cam->onUpdate(updateDuration);
         objectShader.setUniformMatrix4fv("view", cam->getViewMatrix());
         objectShader.setUniformMatrix4fv("projection", cam->getProjectionMatrix());
 
