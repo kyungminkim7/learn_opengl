@@ -62,7 +62,23 @@ public:
     ///
     virtual void onScrollInput(GLFWwindow *window, double xOffset, double yOffset);
 
+
     glm::mat4 getModelMatrix() const;
+
+    ///
+    /// \brief getNormalMatrix Returns the normal matrix.
+    ///
+    /// The returned normal matrix can be used to correct vertex normal vectors distorted through
+    /// non-uniform scaling of the game object's model.
+    ///
+    /// The recommended use of this function is to use this to set a uniform value in an OpenGL
+    /// vertex shader and then multiply by the vertex normal.
+    ///
+    /// Ex) correctedNormal = normalMatrix * vertexNormal;
+    ///
+    /// \return The normal matrix of the game object.
+    ///
+    glm::mat3 getNormalMatrix() const;
 
     GameObject& setPosition(const glm::vec3& position);
     glm::vec3 getPosition() const;
@@ -98,17 +114,16 @@ public:
     ///
     GameObject& translateInLocalFrame(const glm::vec3& translation);
 
-    ///
-    /// \brief scale Assigns a new model scale.
-    /// \param modelScale Scale of the model relative to original scal.
-    /// \return The game object to allow chaining of multiple calls.
-    ///
-    GameObject& scale(const glm::vec3& modelScale);
+    GameObject& setScale(const glm::vec3& scale);
 
 private:
-    glm::mat3 orientation {1.0f};
+    glm::vec3 scale {1.0f};
+
     glm::vec3 position {0.0f};
-    glm::vec3 modelScale {1.0f};
+    glm::mat3 orientation {1.0f};
+
+    mutable glm::mat3 normalMatrix {1.0f};
+    mutable bool normalMatrixIsValid = true;
 };
 
 inline glm::vec3 GameObject::getPosition() const {return this->position;}

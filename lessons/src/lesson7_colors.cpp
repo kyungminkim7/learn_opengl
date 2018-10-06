@@ -160,6 +160,7 @@ int main() {
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 
+    // Position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, static_cast<GLsizei>(stride), reinterpret_cast<void*>(0));
     glEnableVertexAttribArray(0);
 
@@ -182,12 +183,12 @@ int main() {
 
         // Update camera
         cam->onUpdate(updateDuration);
-        objectShader.setUniformMatrix4fv("view", cam->getViewMatrix());
-        objectShader.setUniformMatrix4fv("projection", cam->getProjectionMatrix());
+        objectShader.setUniform("view", cam->getViewMatrix());
+        objectShader.setUniform("projection", cam->getProjectionMatrix());
 
         // Draw cube
         glm::mat4 model(1.0f);
-        objectShader.setUniformMatrix4fv("model", model);
+        objectShader.setUniform("model", model);
         objectShader.setUniform3f("lightColor", 1.0f, 1.0f, 1.0f);
         objectShader.setUniform3f("objectColor", 1.0f, 0.5f, 0.31f);
 
@@ -200,9 +201,9 @@ int main() {
         model = glm::scale(model, glm::vec3(0.2f));
 
         lampShader.use();
-        lampShader.setUniformMatrix4fv("model", model);
-        lampShader.setUniformMatrix4fv("view", cam->getViewMatrix());
-        lampShader.setUniformMatrix4fv("projection", cam->getProjectionMatrix());
+        lampShader.setUniform("model", model);
+        lampShader.setUniform("view", cam->getViewMatrix());
+        lampShader.setUniform("projection", cam->getProjectionMatrix());
 
         glBindVertexArray(lampVao);
         glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, reinterpret_cast<void*>(0));

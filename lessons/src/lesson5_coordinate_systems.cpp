@@ -216,10 +216,10 @@ int main() {
     // Set camera view and projection matrices
     glm::mat4 view(1.0f);
     view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-    shaderProgram.setUniformMatrix4fv("view", view);
+    shaderProgram.setUniform("view", view);
 
     auto projection = glm::perspective(fov, aspectRatio, nearPlane, farPlane);
-    shaderProgram.setUniformMatrix4fv("projection", projection);
+    shaderProgram.setUniform("projection", projection);
 
     while (!glfwWindowShouldClose(window)) {
         processInput(window, &shaderProgram);
@@ -243,7 +243,7 @@ int main() {
             model = glm::translate(model, cubePositions[i]);
             model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
 
-            shaderProgram.setUniformMatrix4fv("model", model);
+            shaderProgram.setUniform("model", model);
 
             glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
         }

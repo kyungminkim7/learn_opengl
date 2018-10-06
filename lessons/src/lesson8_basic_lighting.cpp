@@ -1,5 +1,5 @@
-/// Follows "Colors" lesson.
-/// Creates a lamp object and shaders to incorporate lighting effects.
+/// Follows "Basic Lighting" lesson.
+/// Implements Phong shading for lighting.
 #include <iostream>
 #include <memory>
 #include <vector>
@@ -62,54 +62,54 @@ int main() {
 
     std::string dir("../../learn_opengl/lessons/src/");
 
-    gl::ShaderProgram objectShader(dir + "lesson8_obj.vert",
-                                   dir + "lesson8_obj.frag");
+    gl::ShaderProgram objectShader(dir + "lesson8_object.vert",
+                                   dir + "lesson8_object.frag");
 
     gl::ShaderProgram lampShader(dir + "lesson8_lamp.vert",
                                  dir + "lesson8_lamp.frag");
 
-    constexpr std::size_t numAttributes = 3;
+    constexpr std::size_t numAttributes = 6;
     constexpr auto numFaces = 6;
     constexpr auto numVerticesPerFace = 4;
 
     // Cube vertex data
     std::array<float, numFaces * numVerticesPerFace * numAttributes> vertices = {
-        //pos
-        //Front face
-        -0.5f,  0.5f,  0.5f, //Top left
-         0.5f,  0.5f,  0.5f, //Top right
-         0.5f, -0.5f,  0.5f, //Bottom right
-        -0.5f, -0.5f,  0.5f, //Bottom left
+        // position             // normal
+        // Front face
+        -0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f, // Top left
+         0.5f,  0.5f,  0.5f,    0.0f,  0.0f,  1.0f, // Top right
+         0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f, // Bottom right
+        -0.5f, -0.5f,  0.5f,    0.0f,  0.0f,  1.0f, // Bottom left
 
-        //Left face
-        -0.5f,  0.5f, -0.5f, //Top left
-        -0.5f,  0.5f,  0.5f, //Top right
-        -0.5f, -0.5f,  0.5f, //Bottom right
-        -0.5f, -0.5f, -0.5f, //Bottom left
+        // Left face
+        -0.5f,  0.5f, -0.5f,   -1.0f,  0.0f,  0.0f, // Top left
+        -0.5f,  0.5f,  0.5f,   -1.0f,  0.0f,  0.0f, // Top right
+        -0.5f, -0.5f,  0.5f,   -1.0f,  0.0f,  0.0f, // Bottom right
+        -0.5f, -0.5f, -0.5f,   -1.0f,  0.0f,  0.0f, // Bottom left
 
-        //Right face
-         0.5f,  0.5f,  0.5f, //Top left
-         0.5f,  0.5f, -0.5f, //Top right
-         0.5f, -0.5f, -0.5f, //Bottom right
-         0.5f, -0.5f,  0.5f, //Bottom left
+        // Right face
+         0.5f,  0.5f,  0.5f,    1.0f,  0.0f,  0.0f, // Top left
+         0.5f,  0.5f, -0.5f,    1.0f,  0.0f,  0.0f, // Top right
+         0.5f, -0.5f, -0.5f,    1.0f,  0.0f,  0.0f, // Bottom right
+         0.5f, -0.5f,  0.5f,    1.0f,  0.0f,  0.0f, // Bottom left
 
-        //Back face
-         0.5f,  0.5f, -0.5f, //Top left
-        -0.5f,  0.5f, -0.5f, //Top right
-        -0.5f, -0.5f, -0.5f, //Bottom right
-         0.5f, -0.5f, -0.5f, //Bottom left
+        // Back face
+         0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f, // Top left
+        -0.5f,  0.5f, -0.5f,    0.0f,  0.0f, -1.0f, // Top right
+        -0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f, // Bottom right
+         0.5f, -0.5f, -0.5f,    0.0f,  0.0f, -1.0f, // Bottom left
 
-        //Top face
-        -0.5f,  0.5f, -0.5f, //Top left
-         0.5f,  0.5f, -0.5f, //Top right
-         0.5f,  0.5f,  0.5f, //Bottom right
-        -0.5f,  0.5f,  0.5f, //Bottom left
+        // Top face
+        -0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f, // Top left
+         0.5f,  0.5f, -0.5f,    0.0f,  1.0f,  0.0f, // Top right
+         0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f, // Bottom right
+        -0.5f,  0.5f,  0.5f,    0.0f,  1.0f,  0.0f, // Bottom left
 
-        //Bottom face
-        -0.5f, -0.5f,  0.5f, //Top left
-         0.5f, -0.5f,  0.5f, //Top right
-         0.5f, -0.5f, -0.5f, //Bottom right
-        -0.5f, -0.5f, -0.5f, //Bottom left
+        // Bottom face
+        -0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f, // Top left
+         0.5f, -0.5f,  0.5f,    0.0f, -1.0f,  0.0f, // Top right
+         0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f, // Bottom right
+        -0.5f, -0.5f, -0.5f,    0.0f, -1.0f,  0.0f  // Bottom left
     };
 
     constexpr auto trianglesPerFace = 2;
@@ -155,6 +155,10 @@ int main() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, static_cast<GLsizei>(stride), reinterpret_cast<void*>(0));
     glEnableVertexAttribArray(0);
 
+    // Normal attribute
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, static_cast<GLsizei>(stride), reinterpret_cast<void*>(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
     // Construct lamp
     unsigned int lampVao;
     glGenVertexArrays(1, &lampVao);
@@ -167,15 +171,15 @@ int main() {
     glEnableVertexAttribArray(0);
 
     // Unbind
-    glBindBuffer(GL_ARRAY_BUFFER, 0); //can unbind before VAO since glVertexAttribPointer registered VBO as bound buffer
+    glBindBuffer(GL_ARRAY_BUFFER, 0); // can unbind before VAO since glVertexAttribPointer registered VBO as bound buffer
     glBindVertexArray(0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); //unbind after VAO since VAO records all ebo binds/unbinds
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); // unbind after VAO since VAO records all ebo binds/unbinds
 
     // Create game objects
     auto cube = std::make_shared<gl::GameObject>();
 
     auto lamp = std::make_shared<gl::GameObject>();
-    lamp->scale(glm::vec3(0.2f, 0.2f, 0.2f));
+    lamp->setScale(glm::vec3(0.2f));
     lamp->setPosition({1.2f, 1.0f, 2.0f});
 
     gameObjects.push_back(cube);
@@ -192,19 +196,26 @@ int main() {
             gameObject->onUpdate(updateDuration);
         }
 
+        lamp->setPosition({std::sin(glfwGetTime()) * 2.0f,
+                          0.0f,
+                          1.5f * std::cos(glfwGetTime())});
+
         // Render game objects
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         objectShader.use();
+        objectShader.setUniform("view", cam->getViewMatrix());
+        objectShader.setUniform("projection", cam->getProjectionMatrix());
+        objectShader.setUniform("viewPosition", cam->getPosition());
 
-        // Render lamp
-        objectShader.setUniformMatrix4fv("view", cam->getViewMatrix());
-        objectShader.setUniformMatrix4fv("projection", cam->getProjectionMatrix());
+        // Set light properties
+        objectShader.setUniform("lightPosition", lamp->getPosition());
+        objectShader.setUniform3f("lightColor", 1.0f, 1.0f, 1.0f);
 
         // Render cube
-        objectShader.setUniformMatrix4fv("model", cube->getModelMatrix());
-        objectShader.setUniform3f("lightColor", 1.0f, 1.0f, 1.0f);
+        objectShader.setUniform("model", cube->getModelMatrix());
+        objectShader.setUniform("normal", cube->getNormalMatrix());
         objectShader.setUniform3f("objectColor", 1.0f, 0.5f, 0.31f);
 
         glBindVertexArray(cubeVao);
@@ -212,9 +223,9 @@ int main() {
 
         // Render lamp
         lampShader.use();
-        lampShader.setUniformMatrix4fv("model", lamp->getModelMatrix());
-        lampShader.setUniformMatrix4fv("view", cam->getViewMatrix());
-        lampShader.setUniformMatrix4fv("projection", cam->getProjectionMatrix());
+        lampShader.setUniform("model", lamp->getModelMatrix());
+        lampShader.setUniform("view", cam->getViewMatrix());
+        lampShader.setUniform("projection", cam->getProjectionMatrix());
 
         glBindVertexArray(lampVao);
         glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, reinterpret_cast<void*>(0));

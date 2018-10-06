@@ -244,8 +244,8 @@ int main() {
 
         // Update camera properties
         cam->onUpdate(updateDuration);
-        shaderProgram.setUniformMatrix4fv("view", cam->getViewMatrix());
-        shaderProgram.setUniformMatrix4fv("projection", cam->getProjectionMatrix());
+        shaderProgram.setUniform("view", cam->getViewMatrix());
+        shaderProgram.setUniform("projection", cam->getProjectionMatrix());
 
 
         // Draw multiple rotating cubes
@@ -257,7 +257,7 @@ int main() {
             model = glm::translate(model, cubePositions[i]);
             model = glm::rotate(model, angle, glm::vec3(1.0f, 0.3f, 0.5f));
 
-            shaderProgram.setUniformMatrix4fv("model", model);
+            shaderProgram.setUniform("model", model);
 
             glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
         }

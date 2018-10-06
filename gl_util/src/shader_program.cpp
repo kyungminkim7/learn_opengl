@@ -5,7 +5,9 @@
 #include <sstream>
 
 #include <glad/glad.h>
+#include <glm/mat3x3.hpp>
 #include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
 
 #include <gl_util/gl_exception.h>
 
@@ -142,28 +144,36 @@ void ShaderProgram::use() {
     glUseProgram(this->id);
 }
 
-void ShaderProgram::setUniform1b(const std::string &name, bool value) {
+void ShaderProgram::setUniform(const std::string& name, const glm::vec3& v) {
+    glUniform3f(glGetUniformLocation(this->id, name.c_str()), v.x, v.y, v.z);
+}
+
+void ShaderProgram::setUniform(const std::string& name, const glm::mat3& m) {
+    glUniformMatrix3fv(glGetUniformLocation(this->id, name.c_str()), 1, GL_FALSE, &m[0][0]);
+}
+
+void ShaderProgram::setUniform(const std::string& name, const glm::mat4& m) {
+    glUniformMatrix4fv(glGetUniformLocation(this->id, name.c_str()), 1, GL_FALSE, &m[0][0]);
+}
+
+void ShaderProgram::setUniform1b(const std::string& name, bool value) {
     this->setUniform1i(name, value);
 }
 
-void ShaderProgram::setUniform1i(const std::string &name, int value) {
+void ShaderProgram::setUniform1i(const std::string& name, int value) {
     glUniform1i(glGetUniformLocation(this->id, name.c_str()), value);
 }
 
-void ShaderProgram::setUniform1f(const std::string &name, float value) {
+void ShaderProgram::setUniform1f(const std::string& name, float value) {
     glUniform1f(glGetUniformLocation(this->id, name.c_str()), value);
 }
 
-void ShaderProgram::setUniform3f(const std::string &name, float x, float y, float z) {
+void ShaderProgram::setUniform3f(const std::string& name, float x, float y, float z) {
     glUniform3f(glGetUniformLocation(this->id, name.c_str()), x, y, z);
 }
 
-void ShaderProgram::setUniform4f(const std::string &name, float x, float y, float z, float w) {
+void ShaderProgram::setUniform4f(const std::string& name, float x, float y, float z, float w) {
     glUniform4f(glGetUniformLocation(this->id, name.c_str()), x, y, z, w);
-}
-
-void ShaderProgram::setUniformMatrix4fv(const std::string &name, const glm::mat4 &m) {
-    glUniformMatrix4fv(glGetUniformLocation(this->id, name.c_str()), 1, GL_FALSE, &m[0][0]);
 }
 
 } // namespace gl

@@ -161,7 +161,7 @@ int main() {
         T = glm::translate(T, glm::vec3(0.5f, -0.5f, 0.0f));
         T = glm::rotate(T, static_cast<float>(glfwGetTime()), glm::vec3(0.0f, 0.0f, 1.0f));
         T = glm::scale(T, glm::vec3(0.3f, 0.3f, 0.3f));
-        shaderProgram.setUniformMatrix4fv("transform", T);
+        shaderProgram.setUniform("transform", T);
 
         glBindVertexArray(vao);
         glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
@@ -170,7 +170,7 @@ int main() {
         T = glm::translate(glm::mat4(1.0f), glm::vec3(-0.5f, 0.5f, 0.0f));
         float scale = std::sin(glfwGetTime());
         T = glm::scale(T, glm::vec3(scale, scale, scale));
-        shaderProgram.setUniformMatrix4fv("transform", T);
+        shaderProgram.setUniform("transform", T);
 
         glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 
