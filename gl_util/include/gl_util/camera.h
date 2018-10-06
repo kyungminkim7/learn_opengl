@@ -5,7 +5,6 @@
 #include <chrono>
 
 #include <GLFW/glfw3.h>
-#include <glm/vec3.hpp>
 
 namespace gl {
 
@@ -118,6 +117,8 @@ public:
     /// \param fov_deg
     ///
     void setCurrentFov(float fov_deg);
+
+    void setAspectRatioWidthToHeight(float aspectRatioWidthToHeight);
 
     glm::mat4 getProjectionMatrix() const;
 

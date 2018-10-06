@@ -119,6 +119,10 @@ void Camera::setCurrentFov(float fov_deg) {
     }
 }
 
+void Camera::setAspectRatioWidthToHeight(float aspectRatioWidthToHeight) {
+    this->aspectRatioWidthToHeight = aspectRatioWidthToHeight;
+}
+
 glm::mat4 Camera::getProjectionMatrix() const {
     return glm::perspective(glm::radians(currentFov_deg),
                             aspectRatioWidthToHeight,

@@ -3,8 +3,8 @@
 #include <chrono>
 
 #include <GLFW/glfw3.h>
+#include <glm/fwd.hpp>
 #include <glm/mat3x3.hpp>
-#include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 
 namespace gl {
@@ -62,7 +62,7 @@ public:
     ///
     virtual void onScrollInput(GLFWwindow *window, double xOffset, double yOffset);
 
-    glm::mat4 getPose() const;
+    glm::mat4 getModelMatrix() const;
 
     GameObject& setPosition(const glm::vec3& position);
     glm::vec3 getPosition() const;
@@ -98,16 +98,23 @@ public:
     ///
     GameObject& translateInLocalFrame(const glm::vec3& translation);
 
+    ///
+    /// \brief scale Assigns a new model scale.
+    /// \param modelScale Scale of the model relative to original scal.
+    /// \return The game object to allow chaining of multiple calls.
+    ///
+    GameObject& scale(const glm::vec3& modelScale);
+
 private:
-    /// Homogeneous matrix containing orientation and position.
-    glm::mat4 pose {1.0f};
+    glm::mat3 orientation {1.0f};
+    glm::vec3 position {0.0f};
+    glm::vec3 modelScale {1.0f};
 };
 
-inline glm::mat4 GameObject::getPose() const {return this->pose;}
-inline glm::vec3 GameObject::getPosition() const {return this->pose[3];}
-inline glm::mat3 GameObject::getOrientation() const {return this->pose;}
-inline glm::vec3 GameObject::getOrientationX() const {return this->pose[0];}
-inline glm::vec3 GameObject::getOrientationY() const {return this->pose[1];}
-inline glm::vec3 GameObject::getOrientationZ() const {return this->pose[2];}
+inline glm::vec3 GameObject::getPosition() const {return this->position;}
+inline glm::mat3 GameObject::getOrientation() const {return this->orientation;}
+inline glm::vec3 GameObject::getOrientationX() const {return this->orientation[0];}
+inline glm::vec3 GameObject::getOrientationY() const {return this->orientation[1];}
+inline glm::vec3 GameObject::getOrientationZ() const {return this->orientation[2];}
 
 } // namespace gl

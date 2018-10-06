@@ -2,6 +2,7 @@
 
 #include <glm/gtc/matrix_access.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/mat4x4.hpp>
 
 namespace gl {
 
@@ -10,54 +11,53 @@ void GameObject::onKeyInput(GLFWwindow *window, int key, int action, int mods) {
 void GameObject::onCursorMoved(GLFWwindow *window, double cursorX, double cursorY) {}
 void GameObject::onScrollInput(GLFWwindow *window, double xOffset, double yOffset) {}
 
-GameObject& GameObject::setPosition(const glm::vec3& position) {
+glm::mat4 GameObject::getModelMatrix() const {
+    glm::mat4 modelMatrix(this->orientation);
+
     for (int i = 0; i < 3; ++i) {
-        this->pose[3][i] = position[i];
+        modelMatrix[3][i] = this->position[i];
     }
+
+    return glm::scale(modelMatrix, this->modelScale);
+}
+
+GameObject& GameObject::setPosition(const glm::vec3& position) {
+    this->position = position;
     return *this;
 }
 
 GameObject& GameObject::setOrientation(const glm::mat3& orientation) {
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) {
-            this->pose[i][j] = orientation[i][j];
-        }
-    }
+    this->orientation = orientation;
     return *this;
 }
 
-GameObject& GameObject::setOrientation(const glm::vec3 &orientationX,
-                                const glm::vec3 &orientationY,
-                                const glm::vec3 &orientationZ) {
-    int i;
-    for (i = 0; i < 3; ++i) {
-        this->pose[0][i] = orientationX[i];
-    }
-
-    for (i = 0; i < 3; ++i) {
-        this->pose[1][i] = orientationY[i];
-    }
-
-    for (i = 0; i < 3; ++i) {
-        this->pose[2][i] = orientationZ[i];
-    }
+GameObject& GameObject::setOrientation(const glm::vec3& orientationX,
+                                       const glm::vec3& orientationY,
+                                       const glm::vec3& orientationZ) {
+    this->orientation[0] = orientationX;
+    this->orientation[1] = orientationY;
+    this->orientation[2] = orientationZ;
     return *this;
 }
 
-GameObject& GameObject::rotate(float angle_rad, const glm::vec3 &axis) {
-    this->setOrientation(glm::rotate(glm::mat4(1.0f), angle_rad, axis) * this->pose);
+GameObject& GameObject::rotate(float angle_rad, const glm::vec3& axis) {
+    auto rotation = static_cast<glm::mat3>(glm::rotate(glm::mat4(1.0f), angle_rad, axis));
+    this->orientation = rotation * this->orientation;
     return *this;
 }
 
-GameObject& GameObject::translate(const glm::vec3 &translation) {
-    for (int i = 0; i < 3; ++i) {
-        this->pose[3][i] += translation[i];
-    }
+GameObject& GameObject::translate(const glm::vec3& translation) {
+    this->position += translation;
     return *this;
 }
 
-GameObject& GameObject::translateInLocalFrame(const glm::vec3 &translation) {
-    this->setPosition(this->pose * glm::vec4(translation, 1.0f));
+GameObject& GameObject::translateInLocalFrame(const glm::vec3& translation) {
+    this->position += (this->orientation * translation);
+    return *this;
+}
+
+GameObject& GameObject::scale(const glm::vec3& modelScale) {
+    this->modelScale = modelScale;
     return *this;
 }
 
