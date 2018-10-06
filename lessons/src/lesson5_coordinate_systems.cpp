@@ -209,9 +209,9 @@ int main() {
     const auto farPlane = 100.0f;
 
     shaderProgram.use();
-    shaderProgram.setUniform1i("texture0", 0);
-    shaderProgram.setUniform1i("texture1", 1);
-    shaderProgram.setUniform1f("texMix", texMix);
+    shaderProgram.setUniform("texture0", 0);
+    shaderProgram.setUniform("texture1", 1);
+    shaderProgram.setUniform("texMix", texMix);
 
     // Set camera view and projection matrices
     glm::mat4 view(1.0f);
@@ -270,10 +270,10 @@ void processInput(GLFWwindow *window, gl::ShaderProgram* shaderProgram) {
     } else if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
         texMix += (texMix < 1 ? 0.1 : 0);
         shaderProgram->use();
-        shaderProgram->setUniform1f("texMix", texMix);
+        shaderProgram->setUniform("texMix", texMix);
     } else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
         texMix -= (texMix > 0 ? 0.1 : 0);
         shaderProgram->use();
-        shaderProgram->setUniform1f("texMix", texMix);
+        shaderProgram->setUniform("texMix", texMix);
     }
 }

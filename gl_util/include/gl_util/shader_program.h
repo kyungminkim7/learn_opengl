@@ -32,21 +32,21 @@ public:
     ///
     /// This is a helper function that calls glUseProgram() on this shader program.
     ///
-    void use();
+    ShaderProgram& use();
 
     /// \name Uniforms
     /// Sets uniform value on this shader program. User must call ShaderProgram::use() before
-    /// the 1st call to a ShaderProgram::setUniform...() function to ensure that they are
+    /// the 1st call to a ShaderProgram::setUniform() function to ensure that they are
     /// activating the right shader program.
     ///@{
-    void setUniform(const std::string& name, const glm::vec3& v);
-    void setUniform(const std::string &name, const glm::mat3& m);
-    void setUniform(const std::string& name, const glm::mat4& m);
-    void setUniform1b(const std::string& name, bool value);
-    void setUniform1i(const std::string& name, int value);
-    void setUniform1f(const std::string& name, float value);
-    void setUniform3f(const std::string& name, float x, float y, float z);
-    void setUniform4f(const std::string& name, float x, float y, float z, float w);
+    ShaderProgram& setUniform(const std::string& name, bool value);
+    ShaderProgram& setUniform(const std::string& name, int value);
+    ShaderProgram& setUniform(const std::string& name, float value);
+    ShaderProgram& setUniform(const std::string& name, float x, float y, float z);
+    ShaderProgram& setUniform(const std::string& name, float x, float y, float z, float w);
+    ShaderProgram& setUniform(const std::string& name, const glm::vec3& v);
+    ShaderProgram& setUniform(const std::string& name, const glm::mat3& m);
+    ShaderProgram& setUniform(const std::string& name, const glm::mat4& m);
     ///@}
 
 private:

@@ -15,5 +15,5 @@ void main(void)
     gl_Position = projection * view * model * vec4(vertexPosition, 1.0);
 
     fragPosition = vec3(model * vec4(vertexPosition, 1.0));
-    fragNormal = normal * vertexNormal;
+    fragNormal = normalize(normal * vertexNormal);
 }

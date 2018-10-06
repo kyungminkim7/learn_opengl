@@ -204,28 +204,28 @@ int main() {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        objectShader.use();
-        objectShader.setUniform("view", cam->getViewMatrix());
-        objectShader.setUniform("projection", cam->getProjectionMatrix());
-        objectShader.setUniform("viewPosition", cam->getPosition());
+        objectShader.use()
+                .setUniform("view", cam->getViewMatrix())
+                .setUniform("projection", cam->getProjectionMatrix())
+                .setUniform("viewPosition", cam->getPosition());
 
         // Set light properties
-        objectShader.setUniform("lightPosition", lamp->getPosition());
-        objectShader.setUniform3f("lightColor", 1.0f, 1.0f, 1.0f);
+        objectShader.setUniform("lightPosition", lamp->getPosition())
+                .setUniform("lightColor", 1.0f, 1.0f, 1.0f);
 
         // Render cube
-        objectShader.setUniform("model", cube->getModelMatrix());
-        objectShader.setUniform("normal", cube->getNormalMatrix());
-        objectShader.setUniform3f("objectColor", 1.0f, 0.5f, 0.31f);
+        objectShader.setUniform("model", cube->getModelMatrix())
+                .setUniform("normal", cube->getNormalMatrix())
+                .setUniform("objectColor", 1.0f, 0.5f, 0.31f);
 
         glBindVertexArray(cubeVao);
         glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, reinterpret_cast<void*>(0));
 
         // Render lamp
-        lampShader.use();
-        lampShader.setUniform("model", lamp->getModelMatrix());
-        lampShader.setUniform("view", cam->getViewMatrix());
-        lampShader.setUniform("projection", cam->getProjectionMatrix());
+        lampShader.use()
+                .setUniform("model", lamp->getModelMatrix())
+                .setUniform("view", cam->getViewMatrix())
+                .setUniform("projection", cam->getProjectionMatrix());
 
         glBindVertexArray(lampVao);
         glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, reinterpret_cast<void*>(0));

@@ -189,8 +189,8 @@ int main() {
         // Draw cube
         glm::mat4 model(1.0f);
         objectShader.setUniform("model", model);
-        objectShader.setUniform3f("lightColor", 1.0f, 1.0f, 1.0f);
-        objectShader.setUniform3f("objectColor", 1.0f, 0.5f, 0.31f);
+        objectShader.setUniform("lightColor", 1.0f, 1.0f, 1.0f);
+        objectShader.setUniform("objectColor", 1.0f, 0.5f, 0.31f);
 
         glBindVertexArray(cubeVao);
         glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, reinterpret_cast<void*>(0));

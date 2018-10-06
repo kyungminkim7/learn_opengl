@@ -221,9 +221,9 @@ int main() {
     }
 
     shaderProgram.use();
-    shaderProgram.setUniform1i("texture0", 0);
-    shaderProgram.setUniform1i("texture1", 1);
-    shaderProgram.setUniform1f("texMix", 0.2);
+    shaderProgram.setUniform("texture0", 0);
+    shaderProgram.setUniform("texture1", 1);
+    shaderProgram.setUniform("texMix", 0.2f);
 
     auto lastUpdateTime = std::chrono::system_clock::now();
 

@@ -18,14 +18,13 @@ void main(void)
 
     // Diffuse
     vec3 lightDirection = normalize(lightPosition - fragPosition);
-    vec3 normedFragNormal = normalize(fragNormal);
-    float lightAngle = dot(normedFragNormal, lightDirection);
+    float lightAngle = dot(fragNormal, lightDirection);
     vec3 diffuse = max(lightAngle, 0.0) * lightColor;
 
     // Specular
     float specularStrength = 0.5;
     vec3 viewDirection = normalize(viewPosition - fragPosition);
-    vec3 reflectDirection = reflect(-lightDirection, normedFragNormal);
+    vec3 reflectDirection = reflect(-lightDirection, fragNormal);
     float specularViewAngle = dot(viewDirection, reflectDirection);
     vec3 specular = specularStrength *
             pow(max(specularViewAngle, 0.0), 64) *
