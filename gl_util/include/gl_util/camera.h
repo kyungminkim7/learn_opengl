@@ -94,6 +94,8 @@ public:
     void setLookAtDirection(const glm::vec3& lookAtDirection);
     ///@}
 
+    glm::vec3 getLookAtDirection() const;
+
     /// \name Normal
     ///
     /// Sets the camera's normal.
@@ -104,6 +106,8 @@ public:
     ///@{
     void setNormalDirection(const glm::vec3& normalDirection);
     ///@>
+
+    glm::vec3 getNormalDirection() const;
 
     glm::mat4 getViewMatrix() const;
 
@@ -166,5 +170,8 @@ private:
     double lastCursorX = 0.0;
     double lastCursorY = 0.0;
 };
+
+inline glm::vec3 Camera::getLookAtDirection() const {return this->getOrientationX();}
+inline glm::vec3 Camera::getNormalDirection() const {return this->getOrientationZ();}
 
 } // namespace gl
