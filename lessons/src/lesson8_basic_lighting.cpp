@@ -31,7 +31,7 @@ int main() {
     // Initialize OpenGL and window
     gl::initializeGLFW(3, 3);
 
-    auto window = gl::createWindow(800, 600, "Lesson 8 - Colors");
+    auto window = gl::createWindow(800, 600, "Lesson 8 - Basic Lighting");
     if (window == nullptr) return -1;
 
     if (!gl::initializeGLAD()) return -1;

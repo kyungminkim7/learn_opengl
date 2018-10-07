@@ -30,7 +30,7 @@ int main() {
     gl::initializeGLFW(3, 3);
 
     const unsigned int windowWidth = 800, windowHeight = 600;
-    auto window = gl::createWindow(windowWidth, windowHeight, "Lesson 4 - Transformations");
+    auto window = gl::createWindow(windowWidth, windowHeight, "Lesson 5 - Coordinate Systems");
     if (window == nullptr) return -1;
 
     if (!gl::initializeGLAD()) return -1;
