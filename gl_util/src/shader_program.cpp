@@ -20,7 +20,7 @@ constexpr unsigned int LOG_LENGTH = 1024;
 /// \return File contents.
 /// \exception std::ios_base::failure Failed to open the file.
 ///
-std::string readFile(const std::string &filepath);
+std::string readFile(const std::string& filepath);
 
 ///
 /// \brief compileShader Compiles a shader.
@@ -113,7 +113,7 @@ unsigned int linkShaderProgram(unsigned int vertexShader, unsigned int fragmentS
 } // namespace
 
 namespace gl {
-ShaderProgram::ShaderProgram(const std::string &vertexShaderPath, const std::string &fragmentShaderPath) {
+ShaderProgram::ShaderProgram(const std::string& vertexShaderPath, const std::string& fragmentShaderPath) {
     // Compile shaders
     auto vertexShader = compileShader(GL_VERTEX_SHADER, vertexShaderPath);
 

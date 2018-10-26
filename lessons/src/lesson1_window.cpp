@@ -33,7 +33,7 @@ unsigned int arrayDataSize(const std::array<T,N>& a) {
 
 int createShaderProgram();
 unsigned int compileShader(int shaderType, const char *shaderSource, unsigned int numSourceCodeStr);
-void frameBufferSizeCb(GLFWwindow *window, int width, int height);
+void frameBufferSizeCallback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
 
 int main()
@@ -99,7 +99,7 @@ int main()
 
     //Setup window
     glViewport(0, 0, 800, 600);
-    glfwSetFramebufferSizeCallback(window, &frameBufferSizeCb);
+    glfwSetFramebufferSizeCallback(window, &frameBufferSizeCallback);
 
     while (!glfwWindowShouldClose(window)) {
         processInput(window);
@@ -164,7 +164,7 @@ unsigned int compileShader(int shaderType, const char *shaderSource, unsigned in
     return shader;
 }
 
-void frameBufferSizeCb(GLFWwindow *window, int width, int height) {
+void frameBufferSizeCallback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 

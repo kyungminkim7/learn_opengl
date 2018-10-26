@@ -22,7 +22,7 @@ unsigned int arrayDataSize(const std::array<T,N>& a) {
     return N * sizeof(T);
 }
 
-void frameBufferSizeCb(GLFWwindow *window, int width, int height);
+void frameBufferSizeCallback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window, gl::ShaderProgram* shaderProgram);
 
 int main() {
@@ -36,7 +36,7 @@ int main() {
     if (!gl::initializeGLAD()) return -1;
 
     glViewport(0, 0, windowWidth, windowHeight);
-    glfwSetFramebufferSizeCallback(window, &frameBufferSizeCb);
+    glfwSetFramebufferSizeCallback(window, &frameBufferSizeCallback);
 
     // Configure global OpenGL state
     glEnable(GL_DEPTH_TEST);
@@ -260,7 +260,7 @@ int main() {
     return 0;
 }
 
-void frameBufferSizeCb(GLFWwindow *window, int width, int height) {
+void frameBufferSizeCallback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 

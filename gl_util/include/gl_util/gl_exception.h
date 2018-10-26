@@ -30,4 +30,11 @@ public:
     explicit BuildError(const std::string& whatArg) : Error(whatArg){}
 };
 
+///
+/// \brief The LoadError class deals with errors that may occur when loading files
+///
+class LoadError : public Error {
+public:
+    explicit LoadError(const std::string& whatArg) : Error(whatArg) {}
+};
 } // namespace gl

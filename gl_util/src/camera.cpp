@@ -12,11 +12,12 @@ constexpr float MIN_FOV_DEG = 1.0f;
 }
 
 namespace gl {
-Camera::Camera(float maxFov_deg, float aspectRatioWidthToHeight, float nearPlane, float farPlane) :
-    maxFov_deg(maxFov_deg), currentFov_deg(maxFov_deg), aspectRatioWidthToHeight(aspectRatioWidthToHeight),
-    nearPlane(nearPlane), farPlane(farPlane),
-    cursorSensitivity(0.1f), scrollSensitivity(2.0f), linearSpeed(10.0f),
-    horizontalRotationAxis(0.0f, 0.0f, 1.0f) {}
+Camera::Camera(float maxFov_deg, float aspectRatioWidthToHeight, float nearPlane, float farPlane)
+    : GameObject(),
+      maxFov_deg(maxFov_deg), currentFov_deg(maxFov_deg), aspectRatioWidthToHeight(aspectRatioWidthToHeight),
+      nearPlane(nearPlane), farPlane(farPlane),
+      cursorSensitivity(0.1f), scrollSensitivity(2.0f), linearSpeed(10.0f),
+      horizontalRotationAxis(0.0f, 0.0f, 1.0f) {}
 
 void Camera::onUpdate(std::chrono::duration<float> updateDuration) {
     if (glm::length2(this->linearVelocity) > 0.0f) {

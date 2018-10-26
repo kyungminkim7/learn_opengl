@@ -42,7 +42,7 @@ void initializeGLFW();
 GLFWwindow* createWindow();
 int createShaderProgram(const char *vertexShaderSource, const char *fragmentShaderSource);
 unsigned int compileShader(int shaderType, const char *shaderSource, unsigned int numSourceCodeStr);
-void frameBufferSizeCb(GLFWwindow* window, int width, int height);
+void frameBufferSizeCallback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 
 int main() {
@@ -62,7 +62,7 @@ int main() {
     };
 
     glViewport(0, 0, windowWidth, windowHeight);
-    glfwSetFramebufferSizeCallback(window, &frameBufferSizeCb);
+    glfwSetFramebufferSizeCallback(window, &frameBufferSizeCallback);
 
     std::vector<std::array<float, 9>> vertices = {
         // first triangle
@@ -181,7 +181,7 @@ unsigned int compileShader(int shaderType, const char *shaderSource, unsigned in
     return shader;
 }
 
-void frameBufferSizeCb(GLFWwindow* window, int width, int height) {
+void frameBufferSizeCallback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 

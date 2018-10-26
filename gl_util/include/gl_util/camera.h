@@ -9,8 +9,6 @@
 namespace gl {
 
 ///
-/// \class Camera
-///
 /// \brief First person shooter camera with a perspective view.
 ///
 /// This camera pitches and yaws but does not allow roll.

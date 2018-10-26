@@ -12,6 +12,7 @@ Notes:
 - C++14 Compiler
 - [GLFW](http://www.glfw.org/download.html) - used for windowing and obtaining an OpenGL context.
 - [GLAD](https://glad.dav1d.de/) - used to load OpenGL functions. The current GLAD library in the glad subdirectory is the core profile, version 4.6. Replace the GLAD subdirectory with another GLAD version as desired. The CMakeLists.txt in this glad subdirectory can be used as a starting point to write your own if necessary to compile and link against your GLAD library as it does not come with a build script.
+- [Boost](https://www.boost.org/) - used as a dependency for [Assimp](http://www.assimp.org/)
 
 ### Building Lesson Executables
 1. Install required dependencies listed above.

@@ -4,18 +4,19 @@
 
 #include <GLFW/glfw3.h>
 #include <glm/fwd.hpp>
-#include <glm/mat3x3.hpp>
-#include <glm/vec3.hpp>
+
+#include <gl_util/model.h>
 
 namespace gl {
 
-///
-/// \class GameObject
 ///
 /// \brief The GameObject class represents an object in the 3D virtual world.
 ///
 class GameObject {
 public:
+    GameObject() = default;
+    GameObject(const std::string& modelFilepath);
+
     virtual ~GameObject() = default;
 
     ///
@@ -27,6 +28,8 @@ public:
     /// \param updateDuration Elapsed time since the last frame.
     ///
     virtual void onUpdate(std::chrono::duration<float> updateDuration);
+
+    void render(ShaderProgram *shader) const;
 
     ///
     /// \brief onKeyInput Keyboard input controls.
@@ -117,19 +120,55 @@ public:
     GameObject& setScale(const glm::vec3& scale);
 
 private:
-    glm::vec3 scale {1.0f};
-
-    glm::vec3 position {0.0f};
-    glm::mat3 orientation {1.0f};
-
-    mutable glm::mat3 normalMatrix {1.0f};
-    mutable bool normalMatrixIsValid = true;
+    Model model;
 };
 
-inline glm::vec3 GameObject::getPosition() const {return this->position;}
-inline glm::mat3 GameObject::getOrientation() const {return this->orientation;}
-inline glm::vec3 GameObject::getOrientationX() const {return this->orientation[0];}
-inline glm::vec3 GameObject::getOrientationY() const {return this->orientation[1];}
-inline glm::vec3 GameObject::getOrientationZ() const {return this->orientation[2];}
+inline void GameObject::render(ShaderProgram *shader) const {this->model.render(shader);}
+inline glm::mat4 GameObject::getModelMatrix() const {return this->model.getModelMatrix();}
+inline glm::mat3 GameObject::getNormalMatrix() const {return this->model.getNormalMatrix();}
+
+inline GameObject& GameObject::setPosition(const glm::vec3& position) {
+    this->model.setPosition(position);
+    return *this;
+}
+
+inline glm::vec3 GameObject::getPosition() const {return this->model.getPosition();}
+
+inline GameObject& GameObject::setOrientation(const glm::mat3& orientation) {
+    this->model.setOrientation(orientation);
+    return *this;
+}
+
+inline GameObject& GameObject::setOrientation(const glm::vec3& orientationX,
+                                              const glm::vec3& orientationY,
+                                              const glm::vec3& orientationZ) {
+    this->model.setOrientation(orientationX, orientationY, orientationZ);
+    return *this;
+}
+
+inline glm::mat3 GameObject::getOrientation() const {return this->model.getOrientation();}
+inline glm::vec3 GameObject::getOrientationX() const {return this->model.getOrientationX();}
+inline glm::vec3 GameObject::getOrientationY() const {return this->model.getOrientationY();}
+inline glm::vec3 GameObject::getOrientationZ() const {return this->model.getOrientationZ();}
+
+inline GameObject& GameObject::rotate(float angle_rad, const glm::vec3& axis) {
+    this->model.rotate(angle_rad, axis);
+    return *this;
+}
+
+inline GameObject& GameObject::translate(const glm::vec3& translation) {
+    this->model.translate(translation);
+    return *this;
+}
+
+inline GameObject& GameObject::translateInLocalFrame(const glm::vec3& translation) {
+    this->model.translateInLocalFrame(translation);
+    return *this;
+}
+
+inline GameObject& GameObject::setScale(const glm::vec3& scale) {
+    this->model.setScale(scale);
+    return *this;
+}
 
 } // namespace gl

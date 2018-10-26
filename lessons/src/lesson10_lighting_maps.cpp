@@ -26,10 +26,10 @@ unsigned int arrayDataSize(const std::array<T,N>&) {
     return N * sizeof(T);
 }
 
-void frameBufferSizeCb(GLFWwindow *window, int width, int height);
-void keyCb(GLFWwindow *window, int key, int scancode, int action, int mods);
-void cursorPosCb(GLFWwindow *window, double x, double y);
-void scrollCb(GLFWwindow *window, double xOffset, double yOffset);
+void frameBufferSizeCallback(GLFWwindow *window, int width, int height);
+void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
+void cursorPositionCallback(GLFWwindow *window, double x, double y);
+void scrollCallback(GLFWwindow *window, double xOffset, double yOffset);
 
 unsigned int loadTexture(std::string imageFilePath);
 
@@ -44,10 +44,10 @@ int main() {
 
     // Set up window settings and callbacks
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    glfwSetFramebufferSizeCallback(window, &frameBufferSizeCb);
-    glfwSetCursorPosCallback(window, &cursorPosCb);
-    glfwSetKeyCallback(window, &keyCb);
-    glfwSetScrollCallback(window, &scrollCb);
+    glfwSetFramebufferSizeCallback(window, &frameBufferSizeCallback);
+    glfwSetCursorPosCallback(window, &cursorPositionCallback);
+    glfwSetKeyCallback(window, &keyCallback);
+    glfwSetScrollCallback(window, &scrollCallback);
 
     // Configure OpenGL state
     glEnable(GL_DEPTH_TEST);
@@ -275,12 +275,12 @@ int main() {
     return 0;
 }
 
-void frameBufferSizeCb(GLFWwindow *window, int width, int height) {
+void frameBufferSizeCallback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
     cam->setAspectRatioWidthToHeight(static_cast<float>(width) / height);
 }
 
-void keyCb(GLFWwindow *window, int key, int scancode, int action, int mods) {
+void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
     }
@@ -288,11 +288,11 @@ void keyCb(GLFWwindow *window, int key, int scancode, int action, int mods) {
     cam->onKeyInput(window, key, action, mods);
 }
 
-void cursorPosCb(GLFWwindow *window, double x, double y) {
+void cursorPositionCallback(GLFWwindow *window, double x, double y) {
     cam->onCursorMoved(window, x, y);
 }
 
-void scrollCb(GLFWwindow *window, double xOffset, double yOffset) {
+void scrollCallback(GLFWwindow *window, double xOffset, double yOffset) {
     cam->onScrollInput(window, xOffset, yOffset);
 }
 

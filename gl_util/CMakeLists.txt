@@ -5,10 +5,14 @@ find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 
 add_library(gl_util SHARED
-    "src/glfw_util.cpp"
-    "src/shader_program.cpp"
     "src/camera.cpp"
     "src/game_object.cpp"
+    "src/glfw_util.cpp"
+    "src/mesh.cpp"
+    "src/model.cpp"
+    "src/shader_program.cpp"
+    "src/texture.cpp"
+    "src/vertex.cpp"
 )
 
 target_include_directories(gl_util
@@ -22,15 +26,20 @@ target_link_libraries(gl_util
         glad
         glfw
         glm
+    PRIVATE
+        assimp
+        stb
 )
 
 target_compile_features(gl_util
     PUBLIC
-        cxx_nullptr
+        cxx_constexpr
         cxx_noexcept
+        cxx_nullptr        
         cxx_override
         cxx_uniform_initialization
     PRIVATE
         cxx_auto_type
-        cxx_constexpr
+        cxx_generic_lambdas
+        cxx_range_for
 )

@@ -6,8 +6,6 @@
 namespace gl {
 
 ///
-/// \class ShaderProgram
-///
 /// \brief Manages loading, compiling, linking and working with shader programs.
 ///
 class ShaderProgram
