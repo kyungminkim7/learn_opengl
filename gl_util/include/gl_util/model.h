@@ -94,7 +94,7 @@ private:
     mutable glm::mat3 normalMatrix {1.0f};
     mutable bool normalMatrixIsValid = true;
 
-    std::shared_ptr<std::vector<Mesh>> meshes;
+    std::shared_ptr<std::vector<std::unique_ptr<Mesh>>> meshes;
 };
 
 inline glm::vec3 Model::getPosition() const {return this->position;}

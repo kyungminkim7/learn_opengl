@@ -1,6 +1,7 @@
 #include <gl_util/mesh.h>
 
 #include <cstddef>
+#include <iostream>
 
 #include <glad/glad.h>
 
@@ -53,6 +54,12 @@ Mesh::Mesh(std::vector<Vertex>&& vertices,
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
+Mesh::~Mesh() {
+    glDeleteVertexArrays(1, &this->vao);
+    glDeleteBuffers(1, &this->vbo);
+    glDeleteBuffers(1, &this->ebo);
+}
+
 const std::vector<Texture>& Mesh::getDiffuseTextures() const { return this->diffuseTextures; }
 const std::vector<Texture>& Mesh::getSpecularTextures() const { return this->specularTextures; }
 
@@ -65,7 +72,6 @@ void Mesh::render(ShaderProgram *shader) const {
         shader->setUniform("material.diffuseTexture" + std::to_string(i), textureUnit);
         glBindTexture(GL_TEXTURE_2D, this->diffuseTextures[i].getId());
     }
-
     for (size_t i = 0; i < this->specularTextures.size(); ++i, ++textureUnit) {
         glActiveTexture(GL_TEXTURE0 + textureUnit);
         shader->setUniform("material.specularTexture" + std::to_string(i), textureUnit);
@@ -81,3 +87,4 @@ void Mesh::render(ShaderProgram *shader) const {
 }
 
 } // namespace gl
+

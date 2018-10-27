@@ -15,10 +15,23 @@ namespace gl {
 class Mesh
 {
 public:
+    ///
+    /// \brief Mesh Generates a VAO, VBO and EBO for the mesh data and
+    ///             loads it onto the GPU.
+    /// \param vertices Vertex attribute data.
+    /// \param indices Index data for the EBO.
+    /// \param diffuseTextures Texture data for diffuse lighting.
+    /// \param specularTextures Texture data for specular lighting.
+    ///
     Mesh(std::vector<Vertex>&& vertices,
          std::vector<unsigned int>&& indices,
          std::vector<Texture>&& diffuseTextures,
          std::vector<Texture>&& specularTextures);
+
+    ///
+    /// \brief Deletes VAO, VBO and EBO data from the GPU.
+    ///
+    ~Mesh();
 
     const std::vector<Texture>& getDiffuseTextures() const;
     const std::vector<Texture>& getSpecularTextures() const;

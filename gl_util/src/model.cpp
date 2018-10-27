@@ -14,7 +14,7 @@
 
 namespace {
 
-using Meshes = std::vector<gl::Mesh>;
+using Meshes = std::vector<std::unique_ptr<gl::Mesh>>;
 
 std::unordered_map<std::string, std::weak_ptr<Meshes>> cachedMeshes;
 std::unordered_map<std::string, unsigned int> cachedTextureIds;
@@ -32,7 +32,7 @@ std::unordered_map<std::string, unsigned int> cachedTextureIds;
 ///
 std::shared_ptr<Meshes> loadModel(const std::string& modelFilepath);
 void processNode(Meshes *meshes, const aiNode& node, const aiScene& scene, const std::string& modelDirectory);
-gl::Mesh processMesh(const aiMesh& mesh, const aiScene& scene, const std::string& modelDirectory);
+std::unique_ptr<gl::Mesh> processMesh(const aiMesh& mesh, const aiScene& scene, const std::string& modelDirectory);
 std::vector<gl::Texture> processMaterial(const aiMaterial& material, aiTextureType type, const std::string& modelDirectory);
 
 ///
@@ -66,11 +66,11 @@ std::shared_ptr<Meshes> loadModel(const std::string& modelFilepath) {
         cachedMeshes.erase(modelName);
 
         for (const auto& mesh : *meshes) {
-            for (const auto& texture : mesh.getDiffuseTextures()) {
+            for (const auto& texture : mesh->getDiffuseTextures()) {
                 cachedTextureIds.erase(texture.getImageFilename());
             }
 
-            for (const auto& texture : mesh.getSpecularTextures()) {
+            for (const auto& texture : mesh->getSpecularTextures()) {
                 cachedTextureIds.erase(texture.getImageFilename());
             }
         }
@@ -99,7 +99,7 @@ void processNode(Meshes *meshes, const aiNode& node, const aiScene& scene, const
     }
 }
 
-gl::Mesh processMesh(const aiMesh& mesh, const aiScene& scene, const std::string& modelDirectory) {
+std::unique_ptr<gl::Mesh> processMesh(const aiMesh& mesh, const aiScene& scene, const std::string& modelDirectory) {
     // Process vertices.
     std::vector<gl::Vertex> vertices;
     vertices.reserve(mesh.mNumVertices);
@@ -128,8 +128,9 @@ gl::Mesh processMesh(const aiMesh& mesh, const aiScene& scene, const std::string
         specularTextures = processMaterial(*material, aiTextureType_SPECULAR, modelDirectory);
     }
 
-    return {std::move(vertices), std::move(indices),
-                std::move(diffuseTextures), std::move(specularTextures)};
+    std::cout << "Inside processMesh()\n";
+    return std::make_unique<gl::Mesh>(std::move(vertices), std::move(indices),
+                                      std::move(diffuseTextures), std::move(specularTextures));
 }
 
 std::vector<gl::Texture> processMaterial(const aiMaterial& material, aiTextureType type, const std::string& modelDirectory) {
@@ -293,7 +294,7 @@ void Model::render(ShaderProgram *shader) const {
             .setUniform("normal", this->getNormalMatrix());
 
     for (const auto& mesh : *this->meshes) {
-        mesh.render(shader);
+        mesh->render(shader);
     }
 }
 
