@@ -29,7 +29,7 @@ std::string readFile(const std::string& filepath);
 /// \return Compiled shader object.
 /// \exception gl::BuildError Failed to compile shader.
 ///
-unsigned int compileShader(int shaderType, const std::string& shaderPath);
+unsigned int compileShader(unsigned int shaderType, const std::string& shaderPath);
 
 ///
 /// \brief linkShaderProgram Links shaders to create a shader program.
@@ -62,7 +62,7 @@ std::string readFile(const std::string& filepath) {
     return filestream.str();
 }
 
-unsigned int compileShader(int shaderType, const std::string& shaderPath) {
+unsigned int compileShader(unsigned int shaderType, const std::string& shaderPath) {
     auto shaderCode = readFile(shaderPath);
 
     // Compile shader

@@ -7,7 +7,7 @@
 
 namespace gl {
 
-void initializeGLFW(unsigned int contextMajorVersion, unsigned int contextMinorVersion) {
+void initializeGLFW(int contextMajorVersion, int contextMinorVersion) {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, contextMajorVersion);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, contextMinorVersion);
@@ -15,7 +15,7 @@ void initializeGLFW(unsigned int contextMajorVersion, unsigned int contextMinorV
     std::cout << "Initialized GLFW.\n";
 }
 
-GLFWwindow* createWindow(unsigned int width, unsigned int height, const std::string& title) {
+GLFWwindow* createWindow(int width, int height, const std::string& title) {
     auto window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
 
     if (window == nullptr) {

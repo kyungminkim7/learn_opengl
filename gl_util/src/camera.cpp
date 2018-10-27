@@ -77,7 +77,8 @@ void Camera::onCursorMoved(GLFWwindow *window, double cursorX, double cursorY) {
 }
 
 void Camera::onScrollInput(GLFWwindow *window, double xOffset, double yOffset) {
-    this->setCurrentFov(this->currentFov_deg - this->scrollSensitivity * yOffset);
+    this->setCurrentFov(static_cast<float>(this->currentFov_deg -
+                                           this->scrollSensitivity * yOffset));
 }
 
 void Camera::setLookAtPoint(const glm::vec3& lookAtPoint) {

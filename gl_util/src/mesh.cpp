@@ -21,33 +21,34 @@ Mesh::Mesh(std::vector<Vertex>&& vertices,
     glGenBuffers(1, &this->vbo);
     glGenBuffers(1, &this->ebo);
 
-    auto vertexSize = sizeof(decltype(this->vertices)::value_type);
+    const auto vertexSize = sizeof(decltype(this->vertices)::value_type);
+    const auto indexSize = sizeof(decltype(this->indices)::value_type);
 
     glBindVertexArray(this->vao);
     glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
     glBufferData(GL_ARRAY_BUFFER,
-                 this->vertices.size() * vertexSize,
+                 static_cast<GLsizeiptr>(this->vertices.size() * vertexSize),
                  this->vertices.data(), GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                 this->indices.size() * sizeof(decltype(this->indices)::value_type),
+                 static_cast<GLsizeiptr>(this->indices.size() * indexSize),
                  this->indices.data(), GL_STATIC_DRAW);
 
     // Position attribute.
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, vertexSize,
-                          reinterpret_cast<void*>(Vertex::offsetOfPosition()));
+                          reinterpret_cast<GLvoid*>(Vertex::offsetOfPosition()));
 
     // Normal attribute.
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, vertexSize,
-                          reinterpret_cast<void*>(Vertex::offsetOfNormal()));
+                          reinterpret_cast<GLvoid*>(Vertex::offsetOfNormal()));
 
     // Texture coordinate attribute.
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, vertexSize,
-                          reinterpret_cast<void*>(Vertex::offsetOfTextureCoordinate()));
+                          reinterpret_cast<GLvoid*>(Vertex::offsetOfTextureCoordinate()));
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
@@ -68,12 +69,12 @@ void Mesh::render(ShaderProgram *shader) const {
     int textureUnit = 0;
 
     for (size_t i = 0; i < this->diffuseTextures.size(); ++i, ++textureUnit) {
-        glActiveTexture(GL_TEXTURE0 + textureUnit);
+        glActiveTexture(GL_TEXTURE0 + static_cast<GLenum>(textureUnit));
         shader->setUniform("material.diffuseTexture" + std::to_string(i), textureUnit);
         glBindTexture(GL_TEXTURE_2D, this->diffuseTextures[i].getId());
     }
     for (size_t i = 0; i < this->specularTextures.size(); ++i, ++textureUnit) {
-        glActiveTexture(GL_TEXTURE0 + textureUnit);
+        glActiveTexture(GL_TEXTURE0 + static_cast<GLenum>(textureUnit));
         shader->setUniform("material.specularTexture" + std::to_string(i), textureUnit);
         glBindTexture(GL_TEXTURE_2D, this->specularTextures[i].getId());
     }
@@ -82,7 +83,8 @@ void Mesh::render(ShaderProgram *shader) const {
 
     // Draw mesh
     glBindVertexArray(this->vao);
-    glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(this->indices.size()),
+                   GL_UNSIGNED_INT, reinterpret_cast<const GLvoid*>(0));
     glBindVertexArray(0);
 }
 
