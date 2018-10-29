@@ -98,6 +98,9 @@ unsigned int linkShaderProgram(unsigned int vertexShader, unsigned int fragmentS
     glLinkProgram(shaderProgram);
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
     if (!success) {
+        glDetachShader(shaderProgram, vertexShader);
+        glDetachShader(shaderProgram, fragmentShader);
+
         char linkLog[LOG_LENGTH];
         glGetProgramInfoLog(shaderProgram, LOG_LENGTH, nullptr, linkLog);
 
@@ -106,6 +109,9 @@ unsigned int linkShaderProgram(unsigned int vertexShader, unsigned int fragmentS
 
         throw gl::BuildError(errorMsg.str());
     }
+
+    glDetachShader(shaderProgram, vertexShader);
+    glDetachShader(shaderProgram, fragmentShader);
 
     return shaderProgram;
 }

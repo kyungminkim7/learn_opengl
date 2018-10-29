@@ -157,9 +157,6 @@ std::vector<gl::Texture> processMaterial(const aiMaterial& material, aiTextureTy
 }
 
 unsigned int loadTexture(const std::string& imageFilepath) {
-    unsigned int texture;
-    glGenTextures(1, &texture);
-
     int width, height, numChannels;
     auto data = stbi_load(imageFilepath.c_str(), &width, &height, &numChannels, 0);
 
@@ -187,7 +184,10 @@ unsigned int loadTexture(const std::string& imageFilepath) {
         break;
     }
 
+    unsigned int texture;
+    glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
+
     glTexImage2D(GL_TEXTURE_2D,
                  0, static_cast<GLint>(format), width, height, 0,
                  format, GL_UNSIGNED_BYTE, data);
