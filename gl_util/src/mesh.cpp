@@ -61,22 +61,19 @@ Mesh::~Mesh() {
     glDeleteBuffers(1, &this->ebo);
 }
 
-const std::vector<Texture>& Mesh::getDiffuseTextures() const { return this->diffuseTextures; }
-const std::vector<Texture>& Mesh::getSpecularTextures() const { return this->specularTextures; }
-
-void Mesh::render(ShaderProgram *shader) const {
+void Mesh::render(ShaderProgram *shader) {
     // Bind textures
     int textureUnit = 0;
 
     for (size_t i = 0; i < this->diffuseTextures.size(); ++i, ++textureUnit) {
         glActiveTexture(GL_TEXTURE0 + static_cast<GLenum>(textureUnit));
         shader->setUniform("material.diffuseTexture" + std::to_string(i), textureUnit);
-        glBindTexture(GL_TEXTURE_2D, this->diffuseTextures[i].getId());
+        this->diffuseTextures[i].bind();
     }
     for (size_t i = 0; i < this->specularTextures.size(); ++i, ++textureUnit) {
         glActiveTexture(GL_TEXTURE0 + static_cast<GLenum>(textureUnit));
         shader->setUniform("material.specularTexture" + std::to_string(i), textureUnit);
-        glBindTexture(GL_TEXTURE_2D, this->specularTextures[i].getId());
+        this->specularTextures[i].bind();
     }
 
     glActiveTexture(GL_TEXTURE0);

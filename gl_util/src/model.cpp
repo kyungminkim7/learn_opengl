@@ -8,16 +8,15 @@
 #include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/mat4x4.hpp>
-#include <stb_image.h>
 
 #include <gl_util/gl_exception.h>
+#include <gl_util/texture.h>
 
 namespace {
 
 using Meshes = std::vector<std::unique_ptr<gl::Mesh>>;
 
 std::unordered_map<std::string, std::weak_ptr<Meshes>> cachedMeshes;
-std::unordered_map<std::string, unsigned int> cachedTextureIds;
 
 ///
 /// \brief loadModel Loads and caches mesh and texture data from model file.
@@ -35,21 +34,13 @@ void processNode(Meshes *meshes, const aiNode& node, const aiScene& scene, const
 std::unique_ptr<gl::Mesh> processMesh(const aiMesh& mesh, const aiScene& scene, const std::string& modelDirectory);
 std::vector<gl::Texture> processMaterial(const aiMaterial& material, aiTextureType type, const std::string& modelDirectory);
 
-///
-/// \brief loadTexture Loads and caches texture data from image file.
-/// \param imageFilepath Absolute filepath to the image.
-/// \return OpenGL's texture ID for the loaded texture.
-/// \exception gl::LoadError Failed to load image data from file.
-///
-unsigned int loadTexture(const std::string& imageFilepath);
-
 std::shared_ptr<Meshes> loadModel(const std::string& modelFilepath) {
     auto modelFilenameIndex = modelFilepath.find_last_of('/');
     const auto modelDirectory = modelFilepath.substr(0, modelFilenameIndex);
-    const auto modelName = modelFilepath.substr(modelFilenameIndex + 1);
+    const auto modelFilename = modelFilepath.substr(modelFilenameIndex + 1);
 
     // Check cached meshes to avoid reloading
-    auto meshes = cachedMeshes[modelName].lock();
+    auto meshes = cachedMeshes[modelFilename].lock();
     if (meshes) return meshes;
 
     // Load meshes from file
@@ -61,20 +52,9 @@ std::shared_ptr<Meshes> loadModel(const std::string& modelFilepath) {
         throw gl::LoadError(importer.GetErrorString());
     }
 
-    auto meshesDeleter = [modelName](auto meshes){
-        // Clear caches
-        cachedMeshes.erase(modelName);
-
-        for (const auto& mesh : *meshes) {
-            for (const auto& texture : mesh->getDiffuseTextures()) {
-                cachedTextureIds.erase(texture.getImageFilename());
-            }
-
-            for (const auto& texture : mesh->getSpecularTextures()) {
-                cachedTextureIds.erase(texture.getImageFilename());
-            }
-        }
-
+    auto meshesDeleter = [modelFilename](auto meshes){
+        // Clear cache
+        cachedMeshes.erase(modelFilename);
         delete meshes;
     };
     meshes = std::shared_ptr<Meshes>(new Meshes, meshesDeleter);
@@ -82,7 +62,7 @@ std::shared_ptr<Meshes> loadModel(const std::string& modelFilepath) {
     processNode(meshes.get(), *scene->mRootNode, *scene, modelDirectory);
 
     std::cout << "Successfully loaded model from file: " << modelFilepath << "\n";
-    cachedMeshes[modelName] = meshes;
+    cachedMeshes[modelFilename] = meshes;
     return meshes;
 }
 
@@ -124,7 +104,6 @@ std::unique_ptr<gl::Mesh> processMesh(const aiMesh& mesh, const aiScene& scene, 
     auto diffuseTextures = processMaterial(*material, aiTextureType_DIFFUSE, modelDirectory);
     auto specularTextures = processMaterial(*material, aiTextureType_SPECULAR, modelDirectory);
 
-    std::cout << "Inside processMesh()\n";
     return std::make_unique<gl::Mesh>(std::move(vertices), std::move(indices),
                                       std::move(diffuseTextures), std::move(specularTextures));
 }
@@ -135,72 +114,12 @@ std::vector<gl::Texture> processMaterial(const aiMaterial& material, aiTextureTy
 
     // Load texture data into GPU.
     for (unsigned int i = 0; i < material.GetTextureCount(type); ++i) {
-        std::string imageFilename;
-        {
-            aiString filename;
-            material.GetTexture(type, i, &filename);
-            imageFilename = filename.C_Str();
-        }
-
-        // Cache loaded textures to avoid reloading
-        auto iter = cachedTextureIds.find(imageFilename);
-        if (iter != cachedTextureIds.end()) {
-            textures.emplace_back(imageFilename, iter->second);
-        } else {
-            auto textureId = loadTexture(modelDirectory + "/" + imageFilename);
-            textures.emplace_back(imageFilename, textureId);
-            cachedTextureIds.emplace(imageFilename, textureId);
-        }
+        aiString imageFilename;
+        material.GetTexture(type, i, &imageFilename);
+        textures.emplace_back(modelDirectory + "/" + imageFilename.C_Str());
     }
 
     return textures;
-}
-
-unsigned int loadTexture(const std::string& imageFilepath) {
-    int width, height, numChannels;
-    auto data = stbi_load(imageFilepath.c_str(), &width, &height, &numChannels, 0);
-
-    if (!data) {
-        stbi_image_free(data);
-        throw gl::LoadError("Failed to load texture at: " + imageFilepath);
-    }
-
-    GLenum format;
-    switch (numChannels) {
-    case 1:
-        format = GL_RED;
-        break;
-
-    case 3:
-        format = GL_RGB;
-        break;
-
-    case 4:
-        format = GL_RGBA;
-        break;
-
-    default:
-        format = GL_RGB;
-        break;
-    }
-
-    unsigned int texture;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-
-    glTexImage2D(GL_TEXTURE_2D,
-                 0, static_cast<GLint>(format), width, height, 0,
-                 format, GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    glBindTexture(GL_TEXTURE_2D, 0);
-    stbi_image_free(data);
-    return texture;
 }
 
 } // namespace
@@ -285,7 +204,7 @@ Model& Model::setScale(const glm::vec3& scale) {
     return *this;
 }
 
-void Model::render(ShaderProgram *shader) const {
+void Model::render(ShaderProgram *shader) {
     shader->setUniform("model", this->getModelMatrix())
             .setUniform("normal", this->getNormalMatrix());
 

@@ -12,13 +12,18 @@ class ShaderProgram
 {
 public:
     ///
-    /// \brief Constructor loads, compiles, and links given shaders into a shader program.
+    /// \brief Loads, compiles, and links given shaders into an OpenGL shader program.
     /// \param[in] vertexShaderPath Filepath of the vertex shader.
     /// \param[in] fragmentShaderPath Filepath of the fragment shader.
     /// \exception std::ios_base::failure Failed to open either file.
     /// \exception gl::BuildError Failed to compile or link shaders.
     ///
     ShaderProgram(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
+
+    ///
+    /// \brief Deletes the OpenGL shader program from the GPU.
+    ///
+    ~ShaderProgram();
 
     ShaderProgram(const ShaderProgram&) = delete;
     ShaderProgram(ShaderProgram&&) = delete;

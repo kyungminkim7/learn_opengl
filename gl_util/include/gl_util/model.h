@@ -83,7 +83,7 @@ public:
 
     Model& setScale(const glm::vec3& scale);
 
-    void render(ShaderProgram *shader) const;
+    void render(ShaderProgram *shader);
 
 private:
     glm::vec3 scale {1.0f};

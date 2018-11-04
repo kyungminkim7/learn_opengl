@@ -33,10 +33,7 @@ public:
     ///
     ~Mesh();
 
-    const std::vector<Texture>& getDiffuseTextures() const;
-    const std::vector<Texture>& getSpecularTextures() const;
-
-    void render(ShaderProgram *shader) const;
+    void render(ShaderProgram *shader);
 
 private:
     unsigned int vao;

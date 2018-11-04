@@ -29,7 +29,7 @@ public:
     ///
     virtual void onUpdate(std::chrono::duration<float> updateDuration);
 
-    void render(ShaderProgram *shader) const;
+    void render(ShaderProgram *shader);
 
     ///
     /// \brief onKeyInput Keyboard input controls.
@@ -123,7 +123,7 @@ private:
     Model model;
 };
 
-inline void GameObject::render(ShaderProgram *shader) const {this->model.render(shader);}
+inline void GameObject::render(ShaderProgram *shader) {this->model.render(shader);}
 inline glm::mat4 GameObject::getModelMatrix() const {return this->model.getModelMatrix();}
 inline glm::mat3 GameObject::getNormalMatrix() const {return this->model.getNormalMatrix();}
 

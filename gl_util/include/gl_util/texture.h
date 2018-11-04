@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <string>
 
 namespace gl {
@@ -10,17 +11,25 @@ namespace gl {
 class Texture
 {
 public:
-    Texture(const std::string& imageFilename, unsigned int id);
+    ///
+    /// \brief loadTexture Loads and caches texture data from image file.
+    ///
+    /// Texture object will automatically clean up cache and GPU data on
+    /// destruction. Do NOT call glDeleteTextures on this texture's id.
+    ///
+    /// \param imageFilepath Filepath to the image.
+    /// \return OpenGL's texture ID for the loaded texture.
+    /// \exception gl::LoadError Failed to load image data from file.
+    ///
+    explicit Texture(const std::string& imageFilepath);
 
-    std::string getImageFilename() const;
-    unsigned int getId() const;
+    ///
+    /// \brief bind Binds this texture to the GPU for rendering.
+    ///
+    void bind();
 
 private:
-    std::string imageFilename;
-    unsigned int id;
+    std::shared_ptr<unsigned int> id;
 };
-
-inline std::string Texture::getImageFilename() const {return this->imageFilename;}
-inline unsigned int Texture::getId() const {return this->id;}
 
 } // namespace gl
