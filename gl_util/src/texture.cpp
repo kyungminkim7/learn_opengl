@@ -25,7 +25,7 @@ std::shared_ptr<unsigned int> loadTexture(const std::string& imageFilepath) {
     auto textureId = cachedTextureIds[imageFilename].lock();
     if (textureId) return textureId;
 
-    // Load image
+    // Load image from file
     int width, height, numChannels;
     auto data = stbi_load(imageFilepath.c_str(), &width, &height, &numChannels, 0);
 
@@ -62,6 +62,7 @@ std::shared_ptr<unsigned int> loadTexture(const std::string& imageFilepath) {
     };
     textureId = std::shared_ptr<unsigned int>(new unsigned int, textureIdDeleter);
 
+    // Load texture data onto GPU
     glGenTextures(1, textureId.get());
     glBindTexture(GL_TEXTURE_2D, *textureId);
 

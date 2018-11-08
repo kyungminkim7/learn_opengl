@@ -112,7 +112,6 @@ std::vector<gl::Texture> processMaterial(const aiMaterial& material, aiTextureTy
     std::vector<gl::Texture> textures;
     textures.reserve(material.GetTextureCount(type));
 
-    // Load texture data into GPU.
     for (unsigned int i = 0; i < material.GetTextureCount(type); ++i) {
         aiString imageFilename;
         material.GetTexture(type, i, &imageFilename);
