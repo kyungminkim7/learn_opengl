@@ -5,7 +5,7 @@
 
 namespace gl {
 
-GameObject::GameObject(const std::string& modelFilepath) : model(modelFilepath) {}
+GameObject::GameObject(const std::string &modelFilepath) : model(modelFilepath) {}
 
 void GameObject::onUpdate(std::chrono::duration<float> updateDuration) {}
 void GameObject::onKeyInput(GLFWwindow *window, int key, int action, int mods) {}

@@ -23,10 +23,10 @@ public:
     /// \param diffuseTextures Texture data for diffuse lighting.
     /// \param specularTextures Texture data for specular lighting.
     ///
-    Mesh(std::vector<Vertex>&& vertices,
-         std::vector<unsigned int>&& indices,
-         std::vector<Texture>&& diffuseTextures,
-         std::vector<Texture>&& specularTextures);
+    Mesh(std::vector<Vertex> &&vertices,
+         std::vector<unsigned int> &&indices,
+         std::vector<Texture> &&diffuseTextures,
+         std::vector<Texture> &&specularTextures);
 
     ///
     /// \brief Deletes VAO, VBO and EBO data from the GPU.

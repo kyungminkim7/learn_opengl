@@ -20,7 +20,7 @@ constexpr unsigned int LOG_LENGTH = 1024;
 /// \return File contents.
 /// \exception std::ios_base::failure Failed to open the file.
 ///
-std::string readFile(const std::string& filepath);
+std::string readFile(const std::string &filepath);
 
 ///
 /// \brief compileShader Compiles a shader.
@@ -29,7 +29,7 @@ std::string readFile(const std::string& filepath);
 /// \return Compiled shader object.
 /// \exception gl::BuildError Failed to compile shader.
 ///
-unsigned int compileShader(unsigned int shaderType, const std::string& shaderPath);
+unsigned int compileShader(unsigned int shaderType, const std::string &shaderPath);
 
 ///
 /// \brief linkShaderProgram Links shaders to create a shader program.
@@ -62,7 +62,7 @@ std::string readFile(const std::string& filepath) {
     return filestream.str();
 }
 
-unsigned int compileShader(unsigned int shaderType, const std::string& shaderPath) {
+unsigned int compileShader(unsigned int shaderType, const std::string &shaderPath) {
     auto shaderCode = readFile(shaderPath);
 
     // Compile shader
@@ -119,7 +119,7 @@ unsigned int linkShaderProgram(unsigned int vertexShader, unsigned int fragmentS
 } // namespace
 
 namespace gl {
-ShaderProgram::ShaderProgram(const std::string& vertexShaderPath, const std::string& fragmentShaderPath) {
+ShaderProgram::ShaderProgram(const std::string &vertexShaderPath, const std::string &fragmentShaderPath) {
     // Compile shaders
     auto vertexShader = compileShader(GL_VERTEX_SHADER, vertexShaderPath);
 
@@ -155,42 +155,42 @@ ShaderProgram& ShaderProgram::use() {
     return *this;
 }
 
-ShaderProgram& ShaderProgram::setUniform(const std::string& name, bool value) {
+ShaderProgram& ShaderProgram::setUniform(const std::string &name, bool value) {
     this->setUniform(name, value);
     return *this;
 }
 
-ShaderProgram& ShaderProgram::setUniform(const std::string& name, int value) {
+ShaderProgram& ShaderProgram::setUniform(const std::string &name, int value) {
     glUniform1i(glGetUniformLocation(this->id, name.c_str()), value);
     return *this;
 }
 
-ShaderProgram& ShaderProgram::setUniform(const std::string& name, float value) {
+ShaderProgram& ShaderProgram::setUniform(const std::string &name, float value) {
     glUniform1f(glGetUniformLocation(this->id, name.c_str()), value);
     return *this;
 }
 
-ShaderProgram& ShaderProgram::setUniform(const std::string& name, float x, float y, float z) {
+ShaderProgram& ShaderProgram::setUniform(const std::string &name, float x, float y, float z) {
     glUniform3f(glGetUniformLocation(this->id, name.c_str()), x, y, z);
     return *this;
 }
 
-ShaderProgram& ShaderProgram::setUniform(const std::string& name, float x, float y, float z, float w) {
+ShaderProgram& ShaderProgram::setUniform(const std::string &name, float x, float y, float z, float w) {
     glUniform4f(glGetUniformLocation(this->id, name.c_str()), x, y, z, w);
     return *this;
 }
 
-ShaderProgram& ShaderProgram::setUniform(const std::string& name, const glm::vec3& v) {
+ShaderProgram& ShaderProgram::setUniform(const std::string &name, const glm::vec3 &v) {
     glUniform3f(glGetUniformLocation(this->id, name.c_str()), v.x, v.y, v.z);
     return *this;
 }
 
-ShaderProgram& ShaderProgram::setUniform(const std::string& name, const glm::mat3& m) {
+ShaderProgram& ShaderProgram::setUniform(const std::string &name, const glm::mat3 &m) {
     glUniformMatrix3fv(glGetUniformLocation(this->id, name.c_str()), 1, GL_FALSE, &m[0][0]);
     return *this;
 }
 
-ShaderProgram& ShaderProgram::setUniform(const std::string& name, const glm::mat4& m) {
+ShaderProgram& ShaderProgram::setUniform(const std::string &name, const glm::mat4 &m) {
     glUniformMatrix4fv(glGetUniformLocation(this->id, name.c_str()), 1, GL_FALSE, &m[0][0]);
     return *this;
 }

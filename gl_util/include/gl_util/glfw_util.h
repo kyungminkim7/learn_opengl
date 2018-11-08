@@ -18,7 +18,7 @@ class GLFWwindow;
 namespace gl {
 
 void initializeGLFW(int contextMajorVersion, int contextMinorVersion);
-GLFWwindow* createWindow(int width, int height, const std::string& title);
+GLFWwindow* createWindow(int width, int height, const std::string &title);
 bool initializeGLAD();
 
 } // namespace gl

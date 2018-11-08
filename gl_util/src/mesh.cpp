@@ -7,10 +7,10 @@
 
 namespace gl {
 
-Mesh::Mesh(std::vector<Vertex>&& vertices,
-           std::vector<unsigned int>&& indices,
-           std::vector<Texture>&& diffuseTextures,
-           std::vector<Texture>&& specularTextures) :
+Mesh::Mesh(std::vector<Vertex> &&vertices,
+           std::vector<unsigned int> &&indices,
+           std::vector<Texture> &&diffuseTextures,
+           std::vector<Texture> &&specularTextures) :
     vertices(std::move(vertices)),
     indices(std::move(indices)),
     diffuseTextures(std::move(diffuseTextures)),

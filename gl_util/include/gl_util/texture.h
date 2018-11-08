@@ -21,7 +21,7 @@ public:
     /// \return OpenGL's texture ID for the loaded texture.
     /// \exception gl::LoadError Failed to load image data from file.
     ///
-    explicit Texture(const std::string& imageFilepath);
+    explicit Texture(const std::string &imageFilepath);
 
     ///
     /// \brief bind Binds this texture to the GPU for rendering.

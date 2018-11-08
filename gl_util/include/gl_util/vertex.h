@@ -21,17 +21,17 @@ public:
     static size_t offsetOfTextureCoordinate() noexcept;
     ///@}
 
-    Vertex(const glm::vec3& position,
-           const glm::vec3& normal,
-           const glm::vec2& textureCoordinate);
+    Vertex(const glm::vec3 &position,
+           const glm::vec3 &normal,
+           const glm::vec2 &textureCoordinate);
 
-    void setPosition(const glm::vec3& position);
+    void setPosition(const glm::vec3 &position);
     glm::vec3 getPosition() const;
 
-    void setNormal(const glm::vec3& normal);
+    void setNormal(const glm::vec3 &normal);
     glm::vec3 getNormal() const;
 
-    void setTextureCoordinate(const glm::vec2& textureCoordinate);
+    void setTextureCoordinate(const glm::vec2 &textureCoordinate);
     glm::vec2 getTextureCoordinate() const;
 
 private:

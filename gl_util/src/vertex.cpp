@@ -14,9 +14,9 @@ size_t Vertex::offsetOfTextureCoordinate() noexcept {
     return offsetof(Vertex, textureCoordinate);
 }
 
-Vertex::Vertex(const glm::vec3& position,
-               const glm::vec3& normal,
-               const glm::vec2& textureCoordinate) :
+Vertex::Vertex(const glm::vec3 &position,
+               const glm::vec3 &normal,
+               const glm::vec2 &textureCoordinate) :
     position(position), normal(normal),
     textureCoordinate(textureCoordinate) {}
 

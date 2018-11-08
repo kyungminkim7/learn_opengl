@@ -28,7 +28,7 @@ public:
     /// \exception gl::LoadError Failed to load mesh data from model file.
     /// \exception gl::LoadError Failed to load texture image from file.
     ///
-    explicit Model(const std::string& modelFilepath);
+    explicit Model(const std::string &modelFilepath);
 
     glm::mat4 getModelMatrix() const;
 
@@ -47,13 +47,13 @@ public:
     ///
     glm::mat3 getNormalMatrix() const;
 
-    Model& setPosition(const glm::vec3& position);
+    Model& setPosition(const glm::vec3 &position);
     glm::vec3 getPosition() const;
 
-    Model& setOrientation(const glm::mat3& orientation);
-    Model& setOrientation(const glm::vec3& orientationX,
-                               const glm::vec3& orientationY,
-                               const glm::vec3& orientationZ);
+    Model& setOrientation(const glm::mat3 &orientation);
+    Model& setOrientation(const glm::vec3 &orientationX,
+                          const glm::vec3 &orientationY,
+                          const glm::vec3 &orientationZ);
     glm::mat3 getOrientation() const;
     glm::vec3 getOrientationX() const;
     glm::vec3 getOrientationY() const;
@@ -65,23 +65,23 @@ public:
     /// \param axis Axis (in world coordinate frame) to rotate model about.
     /// \return The model to allow chaining of multiple rotation/translation calls.
     ///
-    Model& rotate(float angle_rad, const glm::vec3& axis);
+    Model& rotate(float angle_rad, const glm::vec3 &axis);
 
     ///
     /// \brief translate Translates the model in the world coordinate frame.
     /// \param translation Amount to translate the model by in the world coordinate frame.
     /// \return The model to allow chaining of multiple rotation/translation calls.
     ///
-    Model& translate(const glm::vec3& translation);
+    Model& translate(const glm::vec3 &translation);
 
     ///
     /// \brief translateInBodyFrame Translates the model in the local coordinate frame.
     /// \param translation Amount to translate the model by in the local coordinate frame.
     /// \return The model to allow chaining of multiple rotation/translation calls.
     ///
-    Model& translateInLocalFrame(const glm::vec3& translation);
+    Model& translateInLocalFrame(const glm::vec3 &translation);
 
-    Model& setScale(const glm::vec3& scale);
+    Model& setScale(const glm::vec3 &scale);
 
     void render(ShaderProgram *shader);
 

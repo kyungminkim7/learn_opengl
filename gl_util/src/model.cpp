@@ -29,12 +29,12 @@ std::unordered_map<std::string, std::weak_ptr<Meshes>> cachedMeshes;
 /// \exception gl::LoadError Failed to load mesh data from model file.
 /// \exception gl::LoadError Failed to load texture image from file.
 ///
-std::shared_ptr<Meshes> loadModel(const std::string& modelFilepath);
-void processNode(Meshes *meshes, const aiNode& node, const aiScene& scene, const std::string& modelDirectory);
-std::unique_ptr<gl::Mesh> processMesh(const aiMesh& mesh, const aiScene& scene, const std::string& modelDirectory);
-std::vector<gl::Texture> processMaterial(const aiMaterial& material, aiTextureType type, const std::string& modelDirectory);
+std::shared_ptr<Meshes> loadModel(const std::string &modelFilepath);
+void processNode(Meshes *meshes, const aiNode &node, const aiScene &scene, const std::string &modelDirectory);
+std::unique_ptr<gl::Mesh> processMesh(const aiMesh &mesh, const aiScene &scene, const std::string &modelDirectory);
+std::vector<gl::Texture> processMaterial(const aiMaterial &material, aiTextureType type, const std::string &modelDirectory);
 
-std::shared_ptr<Meshes> loadModel(const std::string& modelFilepath) {
+std::shared_ptr<Meshes> loadModel(const std::string &modelFilepath) {
     auto modelFilenameIndex = modelFilepath.find_last_of('/');
     const auto modelDirectory = modelFilepath.substr(0, modelFilenameIndex);
     const auto modelFilename = modelFilepath.substr(modelFilenameIndex + 1);
@@ -66,7 +66,7 @@ std::shared_ptr<Meshes> loadModel(const std::string& modelFilepath) {
     return meshes;
 }
 
-void processNode(Meshes *meshes, const aiNode& node, const aiScene& scene, const std::string& modelDirectory) {
+void processNode(Meshes *meshes, const aiNode &node, const aiScene &scene, const std::string &modelDirectory) {
     // Process node's meshes.
     for (unsigned int i = 0; i < node.mNumMeshes; ++i) {
         auto mesh = scene.mMeshes[node.mMeshes[i]];
@@ -79,7 +79,7 @@ void processNode(Meshes *meshes, const aiNode& node, const aiScene& scene, const
     }
 }
 
-std::unique_ptr<gl::Mesh> processMesh(const aiMesh& mesh, const aiScene& scene, const std::string& modelDirectory) {
+std::unique_ptr<gl::Mesh> processMesh(const aiMesh &mesh, const aiScene &scene, const std::string &modelDirectory) {
     // Process vertices.
     std::vector<gl::Vertex> vertices;
     vertices.reserve(mesh.mNumVertices);
@@ -108,7 +108,7 @@ std::unique_ptr<gl::Mesh> processMesh(const aiMesh& mesh, const aiScene& scene, 
                                       std::move(diffuseTextures), std::move(specularTextures));
 }
 
-std::vector<gl::Texture> processMaterial(const aiMaterial& material, aiTextureType type, const std::string& modelDirectory) {
+std::vector<gl::Texture> processMaterial(const aiMaterial &material, aiTextureType type, const std::string &modelDirectory) {
     std::vector<gl::Texture> textures;
     textures.reserve(material.GetTextureCount(type));
 
@@ -149,23 +149,23 @@ glm::mat3 Model::getNormalMatrix() const {
     return this->normalMatrix;
 }
 
-Model& Model::setPosition(const glm::vec3& position) {
+Model& Model::setPosition(const glm::vec3 &position) {
     this->position = position;
 
     this->normalMatrixIsValid = false;
     return *this;
 }
 
-Model& Model::setOrientation(const glm::mat3& orientation) {
+Model& Model::setOrientation(const glm::mat3 &orientation) {
     this->orientation = orientation;
 
     this->normalMatrixIsValid = false;
     return *this;
 }
 
-Model& Model::setOrientation(const glm::vec3& orientationX,
-                             const glm::vec3& orientationY,
-                             const glm::vec3& orientationZ) {
+Model& Model::setOrientation(const glm::vec3 &orientationX,
+                             const glm::vec3 &orientationY,
+                             const glm::vec3 &orientationZ) {
     this->orientation[0] = orientationX;
     this->orientation[1] = orientationY;
     this->orientation[2] = orientationZ;
@@ -174,7 +174,7 @@ Model& Model::setOrientation(const glm::vec3& orientationX,
     return *this;
 }
 
-Model& Model::rotate(float angle_rad, const glm::vec3& axis) {
+Model& Model::rotate(float angle_rad, const glm::vec3 &axis) {
     auto rotation = static_cast<glm::mat3>(glm::rotate(glm::mat4(1.0f), angle_rad, axis));
     this->orientation = rotation * this->orientation;
 
@@ -182,21 +182,21 @@ Model& Model::rotate(float angle_rad, const glm::vec3& axis) {
     return *this;
 }
 
-Model& Model::translate(const glm::vec3& translation) {
+Model& Model::translate(const glm::vec3 &translation) {
     this->position += translation;
 
     this->normalMatrixIsValid = false;
     return *this;
 }
 
-Model& Model::translateInLocalFrame(const glm::vec3& translation) {
+Model& Model::translateInLocalFrame(const glm::vec3 &translation) {
     this->position += (this->orientation * translation);
 
     this->normalMatrixIsValid = false;
     return *this;
 }
 
-Model& Model::setScale(const glm::vec3& scale) {
+Model& Model::setScale(const glm::vec3 &scale) {
     this->scale = scale;
 
     this->normalMatrixIsValid = false;

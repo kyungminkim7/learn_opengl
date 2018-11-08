@@ -81,7 +81,7 @@ void Camera::onScrollInput(GLFWwindow *window, double xOffset, double yOffset) {
                                            this->scrollSensitivity * yOffset));
 }
 
-void Camera::setLookAtPoint(const glm::vec3& lookAtPoint) {
+void Camera::setLookAtPoint(const glm::vec3 &lookAtPoint) {
     this->setLookAtDirection(lookAtPoint - this->getPosition());
 }
 
@@ -143,7 +143,7 @@ void Camera::setScrollSensitivity(float scrollSensitivity) {
     this->scrollSensitivity = scrollSensitivity;
 }
 
-void Camera::setHorizontalRotationAxis(const glm::vec3& yawAxis) {
+void Camera::setHorizontalRotationAxis(const glm::vec3 &yawAxis) {
     this->horizontalRotationAxis = yawAxis;
 }
 

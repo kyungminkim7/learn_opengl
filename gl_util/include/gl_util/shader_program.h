@@ -18,17 +18,17 @@ public:
     /// \exception std::ios_base::failure Failed to open either file.
     /// \exception gl::BuildError Failed to compile or link shaders.
     ///
-    ShaderProgram(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
+    ShaderProgram(const std::string &vertexShaderPath, const std::string &fragmentShaderPath);
 
     ///
     /// \brief Deletes the OpenGL shader program from the GPU.
     ///
     ~ShaderProgram();
 
-    ShaderProgram(const ShaderProgram&) = delete;
-    ShaderProgram(ShaderProgram&&) = delete;
-    ShaderProgram& operator=(const ShaderProgram&) = delete;
-    ShaderProgram& operator=(ShaderProgram&&) = delete;
+    ShaderProgram(const ShaderProgram &) = delete;
+    ShaderProgram(ShaderProgram &&) = delete;
+    ShaderProgram& operator=(const ShaderProgram &) = delete;
+    ShaderProgram& operator=(ShaderProgram &&) = delete;
 
     ///
     /// \brief Sets this program as the current active shader program.
@@ -42,14 +42,14 @@ public:
     /// the 1st call to a ShaderProgram::setUniform() function to ensure that they are
     /// activating the right shader program.
     ///@{
-    ShaderProgram& setUniform(const std::string& name, bool value);
-    ShaderProgram& setUniform(const std::string& name, int value);
-    ShaderProgram& setUniform(const std::string& name, float value);
-    ShaderProgram& setUniform(const std::string& name, float x, float y, float z);
-    ShaderProgram& setUniform(const std::string& name, float x, float y, float z, float w);
-    ShaderProgram& setUniform(const std::string& name, const glm::vec3& v);
-    ShaderProgram& setUniform(const std::string& name, const glm::mat3& m);
-    ShaderProgram& setUniform(const std::string& name, const glm::mat4& m);
+    ShaderProgram& setUniform(const std::string &name, bool value);
+    ShaderProgram& setUniform(const std::string &name, int value);
+    ShaderProgram& setUniform(const std::string &name, float value);
+    ShaderProgram& setUniform(const std::string &name, float x, float y, float z);
+    ShaderProgram& setUniform(const std::string &name, float x, float y, float z, float w);
+    ShaderProgram& setUniform(const std::string &name, const glm::vec3 &v);
+    ShaderProgram& setUniform(const std::string &name, const glm::mat3 &m);
+    ShaderProgram& setUniform(const std::string &name, const glm::mat4 &m);
     ///@}
 
 private:

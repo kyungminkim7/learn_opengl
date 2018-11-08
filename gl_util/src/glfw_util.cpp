@@ -15,7 +15,7 @@ void initializeGLFW(int contextMajorVersion, int contextMinorVersion) {
     std::cout << "Initialized GLFW.\n";
 }
 
-GLFWwindow* createWindow(int width, int height, const std::string& title) {
+GLFWwindow* createWindow(int width, int height, const std::string &title) {
     auto window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
 
     if (window == nullptr) {

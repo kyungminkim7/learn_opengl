@@ -102,7 +102,7 @@ public:
     /// look at direction, make sure to call Camera::setLookAt...() afterwards to properly
     /// set the new orientation.
     ///@{
-    void setNormalDirection(const glm::vec3& normalDirection);
+    void setNormalDirection(const glm::vec3 &normalDirection);
     ///@>
 
     glm::vec3 getNormalDirection() const;

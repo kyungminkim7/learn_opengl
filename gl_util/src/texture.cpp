@@ -18,7 +18,7 @@ std::unordered_map<std::string, std::weak_ptr<unsigned int>> cachedTextureIds;
 /// \return OpenGL's texture ID for the loaded texture.
 /// \exception gl::LoadError Failed to load image data from file.
 ///
-std::shared_ptr<unsigned int> loadTexture(const std::string& imageFilepath) {
+std::shared_ptr<unsigned int> loadTexture(const std::string &imageFilepath) {
     const auto imageFilename = imageFilepath.substr(imageFilepath.find_last_of('/') + 1);
 
     // Check cache to avoid reloading
@@ -87,7 +87,7 @@ std::shared_ptr<unsigned int> loadTexture(const std::string& imageFilepath) {
 
 namespace gl {
 
-Texture::Texture(const std::string& imageFilepath)
+Texture::Texture(const std::string &imageFilepath)
     : id(loadTexture(imageFilepath)) {}
 
 void Texture::bind() {

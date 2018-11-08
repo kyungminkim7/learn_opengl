@@ -15,7 +15,7 @@ namespace gl {
 ///
 class Error : public std::exception {
 public:
-    explicit Error(const std::string& whatArg) : whatArg(whatArg){}
+    explicit Error(const std::string &whatArg) : whatArg(whatArg){}
     virtual const char* what() const noexcept override {return this->whatArg.c_str();}
 
 private:
@@ -27,7 +27,7 @@ private:
 ///
 class BuildError : public Error {
 public:
-    explicit BuildError(const std::string& whatArg) : Error(whatArg){}
+    explicit BuildError(const std::string &whatArg) : Error(whatArg){}
 };
 
 ///
@@ -35,6 +35,6 @@ public:
 ///
 class LoadError : public Error {
 public:
-    explicit LoadError(const std::string& whatArg) : Error(whatArg) {}
+    explicit LoadError(const std::string &whatArg) : Error(whatArg) {}
 };
 } // namespace gl
