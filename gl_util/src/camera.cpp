@@ -69,8 +69,8 @@ void Camera::onCursorMoved(GLFWwindow *window, double cursorX, double cursorY) {
     auto deltaYaw = static_cast<float>(glm::radians(-xOffset * cursorSensitivity));
     auto deltaPitch = static_cast<float>(glm::radians(yOffset * cursorSensitivity));
 
-    this->rotate(deltaYaw, this->horizontalRotationAxis)
-            .rotate(deltaPitch, this->getOrientationY());
+    this->rotate(deltaPitch, this->getOrientationY())
+            .rotate(deltaYaw, this->horizontalRotationAxis);
 
     this->lastCursorX = cursorX;
     this->lastCursorY = cursorY;
