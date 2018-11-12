@@ -101,11 +101,12 @@ std::unique_ptr<gl::Mesh> processMesh(const aiMesh &mesh, const aiScene &scene, 
 
     // Process textures.
     const auto material = scene.mMaterials[mesh.mMaterialIndex];
+    auto ambientTextures = processMaterial(*material, aiTextureType_AMBIENT, modelDirectory);
     auto diffuseTextures = processMaterial(*material, aiTextureType_DIFFUSE, modelDirectory);
     auto specularTextures = processMaterial(*material, aiTextureType_SPECULAR, modelDirectory);
 
     return std::make_unique<gl::Mesh>(std::move(vertices), std::move(indices),
-                                      std::move(diffuseTextures), std::move(specularTextures));
+                                      std::move(ambientTextures), std::move(diffuseTextures), std::move(specularTextures));
 }
 
 std::vector<gl::Texture> processMaterial(const aiMaterial &material, aiTextureType type, const std::string &modelDirectory) {

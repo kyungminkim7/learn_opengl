@@ -25,6 +25,7 @@ public:
     ///
     Mesh(std::vector<Vertex> &&vertices,
          std::vector<unsigned int> &&indices,
+         std::vector<Texture> &&ambientTextures,
          std::vector<Texture> &&diffuseTextures,
          std::vector<Texture> &&specularTextures);
 
@@ -42,6 +43,7 @@ private:
 
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
+    std::vector<Texture> ambientTextures;
     std::vector<Texture> diffuseTextures;
     std::vector<Texture> specularTextures;
 };

@@ -9,10 +9,12 @@ namespace gl {
 
 Mesh::Mesh(std::vector<Vertex> &&vertices,
            std::vector<unsigned int> &&indices,
+           std::vector<Texture> &&ambientTextures,
            std::vector<Texture> &&diffuseTextures,
            std::vector<Texture> &&specularTextures) :
     vertices(std::move(vertices)),
     indices(std::move(indices)),
+    ambientTextures(std::move(ambientTextures)),
     diffuseTextures(std::move(diffuseTextures)),
     specularTextures(std::move(specularTextures)) {
 
@@ -65,11 +67,18 @@ void Mesh::render(ShaderProgram *shader) {
     // Bind textures
     int textureUnit = 0;
 
+    for (size_t i =0; i < this->ambientTextures.size(); ++i, ++textureUnit) {
+        glActiveTexture(GL_TEXTURE0 + static_cast<GLenum>(textureUnit));
+        shader->setUniform("material.ambientTexture" + std::to_string(i), textureUnit);
+        this->ambientTextures[i].bind();
+    }
+
     for (size_t i = 0; i < this->diffuseTextures.size(); ++i, ++textureUnit) {
         glActiveTexture(GL_TEXTURE0 + static_cast<GLenum>(textureUnit));
         shader->setUniform("material.diffuseTexture" + std::to_string(i), textureUnit);
         this->diffuseTextures[i].bind();
     }
+
     for (size_t i = 0; i < this->specularTextures.size(); ++i, ++textureUnit) {
         glActiveTexture(GL_TEXTURE0 + static_cast<GLenum>(textureUnit));
         shader->setUniform("material.specularTexture" + std::to_string(i), textureUnit);
