@@ -53,7 +53,6 @@ std::string readFile(const std::string& filepath) {
         errorMsg << "Failed to open file: " << filepath;
         throw std::ios_base::failure(errorMsg.str());
     }
-    std::cout << "Found file: " << filepath << "\n";
 
     // Read file
     std::stringstream filestream;
@@ -130,7 +129,6 @@ ShaderProgram::ShaderProgram(const std::string &vertexShaderPath, const std::str
         glDeleteShader(vertexShader);
         throw;
     }
-    std::cout << "Successfully compiled vertex & fragment shaders.\n";
 
     // Link shaders
     try {
@@ -140,7 +138,8 @@ ShaderProgram::ShaderProgram(const std::string &vertexShaderPath, const std::str
         glDeleteShader(fragmentShader);
         throw;
     }
-    std::cout << "Successfully linked vertex & fragment shaders.\n";
+    std::cout << "Successfully compiled and linked shaders:\n"
+              << vertexShaderPath << "\n" << fragmentShaderPath << "\n\n";
 
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);

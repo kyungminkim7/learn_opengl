@@ -2,6 +2,9 @@
 
 #include <vector>
 
+#include <assimp/material.h>
+#include <assimp/mesh.h>
+
 #include <gl_util/shader_program.h>
 #include <gl_util/texture.h>
 #include <gl_util/vertex.h>
@@ -16,18 +19,11 @@ class Mesh
 {
 public:
     ///
-    /// \brief Mesh Generates a VAO, VBO and EBO for the mesh data and
-    ///             loads it onto the GPU.
-    /// \param vertices Vertex attribute data.
-    /// \param indices Index data for the EBO.
-    /// \param diffuseTextures Texture data for diffuse lighting.
-    /// \param specularTextures Texture data for specular lighting.
+    /// \brief Generates a VAO, VBO and EBO for the mesh data,
+    ///        loads texture data from the material and
+    ///        loads all data onto the GPU.
     ///
-    Mesh(std::vector<Vertex> &&vertices,
-         std::vector<unsigned int> &&indices,
-         std::vector<Texture> &&ambientTextures,
-         std::vector<Texture> &&diffuseTextures,
-         std::vector<Texture> &&specularTextures);
+    Mesh(const aiMesh &mesh, const aiMaterial &material, const std::string &textureDirectory);
 
     ///
     /// \brief Deletes VAO, VBO and EBO data from the GPU.
@@ -40,9 +36,8 @@ private:
     unsigned int vao;
     unsigned int vbo;
     unsigned int ebo;
+    unsigned int numIndices;
 
-    std::vector<Vertex> vertices;
-    std::vector<unsigned int> indices;
     std::vector<Texture> ambientTextures;
     std::vector<Texture> diffuseTextures;
     std::vector<Texture> specularTextures;

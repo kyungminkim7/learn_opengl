@@ -14,9 +14,9 @@
 
 namespace {
 
-using Meshes = std::vector<std::unique_ptr<gl::Mesh>>;
+using ModelMeshes = std::vector<std::unique_ptr<gl::Mesh>>;
 
-std::unordered_map<std::string, std::weak_ptr<Meshes>> cachedMeshes;
+std::unordered_map<std::string, std::weak_ptr<ModelMeshes>> cachedModelMeshes;
 
 ///
 /// \brief loadModel Loads and caches mesh and texture data from model file.
@@ -29,18 +29,16 @@ std::unordered_map<std::string, std::weak_ptr<Meshes>> cachedMeshes;
 /// \exception gl::LoadError Failed to load mesh data from model file.
 /// \exception gl::LoadError Failed to load texture image from file.
 ///
-std::shared_ptr<Meshes> loadModel(const std::string &modelFilepath);
-void processNode(Meshes *meshes, const aiNode &node, const aiScene &scene, const std::string &modelDirectory);
-std::unique_ptr<gl::Mesh> processMesh(const aiMesh &mesh, const aiScene &scene, const std::string &modelDirectory);
-std::vector<gl::Texture> processMaterial(const aiMaterial &material, aiTextureType type, const std::string &modelDirectory);
+std::shared_ptr<ModelMeshes> loadModel(const std::string &modelFilepath);
+void processNode(ModelMeshes *meshes, const aiNode &node, const aiScene &scene, const std::string &modelDirectory);
 
-std::shared_ptr<Meshes> loadModel(const std::string &modelFilepath) {
+std::shared_ptr<ModelMeshes> loadModel(const std::string &modelFilepath) {
     auto modelFilenameIndex = modelFilepath.find_last_of('/');
     const auto modelDirectory = modelFilepath.substr(0, modelFilenameIndex);
     const auto modelFilename = modelFilepath.substr(modelFilenameIndex + 1);
 
     // Check cached meshes to avoid reloading
-    auto meshes = cachedMeshes[modelFilename].lock();
+    auto meshes = cachedModelMeshes[modelFilename].lock();
     if (meshes) return meshes;
 
     // Load meshes from file
@@ -54,23 +52,24 @@ std::shared_ptr<Meshes> loadModel(const std::string &modelFilepath) {
 
     auto meshesDeleter = [modelFilename](auto meshes){
         // Clear cache
-        cachedMeshes.erase(modelFilename);
+        cachedModelMeshes.erase(modelFilename);
         delete meshes;
     };
-    meshes = std::shared_ptr<Meshes>(new Meshes, meshesDeleter);
+    meshes = std::shared_ptr<ModelMeshes>(new ModelMeshes, meshesDeleter);
 
     processNode(meshes.get(), *scene->mRootNode, *scene, modelDirectory);
 
     std::cout << "Successfully loaded model from file: " << modelFilepath << "\n";
-    cachedMeshes[modelFilename] = meshes;
+    cachedModelMeshes[modelFilename] = meshes;
     return meshes;
 }
 
-void processNode(Meshes *meshes, const aiNode &node, const aiScene &scene, const std::string &modelDirectory) {
+void processNode(ModelMeshes *meshes, const aiNode &node, const aiScene &scene, const std::string &modelDirectory) {
     // Process node's meshes.
     for (unsigned int i = 0; i < node.mNumMeshes; ++i) {
-        auto mesh = scene.mMeshes[node.mMeshes[i]];
-        meshes->push_back(processMesh(*mesh, scene, modelDirectory));
+        const auto mesh = scene.mMeshes[node.mMeshes[i]];
+        const auto material = scene.mMaterials[mesh->mMaterialIndex];
+        meshes->push_back(std::make_unique<gl::Mesh>(*mesh, *material, modelDirectory));
     }
 
     // Recursively process children nodes.
@@ -79,54 +78,11 @@ void processNode(Meshes *meshes, const aiNode &node, const aiScene &scene, const
     }
 }
 
-std::unique_ptr<gl::Mesh> processMesh(const aiMesh &mesh, const aiScene &scene, const std::string &modelDirectory) {
-    // Process vertices.
-    std::vector<gl::Vertex> vertices;
-    vertices.reserve(mesh.mNumVertices);
-    for (unsigned int i = 0; i < mesh.mNumVertices; ++i) {
-        vertices.emplace_back(glm::vec3(mesh.mVertices[i].x, mesh.mVertices[i].y, mesh.mVertices[i].z),
-                              glm::vec3(mesh.mNormals[i].x, mesh.mNormals[i].y, mesh.mNormals[i].z),
-                              glm::vec2(mesh.mTextureCoords[0][i].x, mesh.mTextureCoords[0][i].y));
-    }
-
-    // Process indices.
-    std::vector<unsigned int> indices;
-    indices.reserve(mesh.mNumVertices);
-    for (unsigned int i = 0; i < mesh.mNumFaces; ++i) {
-        const auto& face = mesh.mFaces[i];
-        for (unsigned int j = 0; j < face.mNumIndices; ++j) {
-            indices.emplace_back(face.mIndices[j]);
-        }
-    }
-
-    // Process textures.
-    const auto material = scene.mMaterials[mesh.mMaterialIndex];
-    auto ambientTextures = processMaterial(*material, aiTextureType_AMBIENT, modelDirectory);
-    auto diffuseTextures = processMaterial(*material, aiTextureType_DIFFUSE, modelDirectory);
-    auto specularTextures = processMaterial(*material, aiTextureType_SPECULAR, modelDirectory);
-
-    return std::make_unique<gl::Mesh>(std::move(vertices), std::move(indices),
-                                      std::move(ambientTextures), std::move(diffuseTextures), std::move(specularTextures));
-}
-
-std::vector<gl::Texture> processMaterial(const aiMaterial &material, aiTextureType type, const std::string &modelDirectory) {
-    std::vector<gl::Texture> textures;
-    textures.reserve(material.GetTextureCount(type));
-
-    for (unsigned int i = 0; i < material.GetTextureCount(type); ++i) {
-        aiString imageFilename;
-        material.GetTexture(type, i, &imageFilename);
-        textures.emplace_back(modelDirectory + "/" + imageFilename.C_Str());
-    }
-
-    return textures;
-}
-
 } // namespace
 
 namespace gl {
 
-Model::Model() : meshes(std::make_shared<Meshes>()) {}
+Model::Model() : meshes(std::make_shared<ModelMeshes>()) {}
 
 Model::Model(const std::string& modelFilepath)
     : meshes(loadModel(modelFilepath)) {}
