@@ -7,7 +7,6 @@
 
 #include <gl_util/shader_program.h>
 #include <gl_util/texture.h>
-#include <gl_util/vertex.h>
 
 namespace gl {
 

@@ -5,6 +5,8 @@
 
 #include <glad/glad.h>
 
+#include <glm/vec2.hpp>
+
 namespace {
 
 std::vector<gl::Texture> loadTexturesFromMaterial(const aiMaterial &material, aiTextureType type, const std::string &modelDirectory) {
@@ -25,13 +27,11 @@ std::vector<gl::Texture> loadTexturesFromMaterial(const aiMaterial &material, ai
 namespace gl {
 
 Mesh::Mesh(const aiMesh &mesh, const aiMaterial &material, const std::string &textureDirectory) {
-    // Process vertices.
-    std::vector<Vertex> vertices;
-    vertices.reserve(mesh.mNumVertices);
+    // Load texture coordinates into appropriate data structure.
+    std::vector<glm::vec2> textureCoordinates;
+    textureCoordinates.reserve(mesh.mNumVertices);
     for (unsigned int i = 0; i < mesh.mNumVertices; ++i) {
-        vertices.emplace_back(glm::vec3(mesh.mVertices[i].x, mesh.mVertices[i].y, mesh.mVertices[i].z),
-                              glm::vec3(mesh.mNormals[i].x, mesh.mNormals[i].y, mesh.mNormals[i].z),
-                              glm::vec2(mesh.mTextureCoords[0][i].x, mesh.mTextureCoords[0][i].y));
+        textureCoordinates.emplace_back(mesh.mTextureCoords[0][i].x, mesh.mTextureCoords[0][i].y);
     }
 
     // Process indices.
@@ -45,13 +45,14 @@ Mesh::Mesh(const aiMesh &mesh, const aiMaterial &material, const std::string &te
     }
     this->numIndices = indices.size();
 
-    // Process material.
-    this->ambientTextures = loadTexturesFromMaterial(material, aiTextureType_AMBIENT, textureDirectory);
-    this->diffuseTextures = loadTexturesFromMaterial(material, aiTextureType_DIFFUSE, textureDirectory);
-    this->specularTextures = loadTexturesFromMaterial(material, aiTextureType_SPECULAR, textureDirectory);
+    constexpr auto positionSize_bytes = sizeof(aiVector3D);
+    constexpr auto normalSize_bytes = sizeof(aiVector3D);
+    constexpr auto textureCoordSize_bytes = sizeof(decltype(textureCoordinates)::value_type);
+    constexpr auto indexSize = sizeof(decltype(indices)::value_type);
 
-    const auto vertexSize = sizeof(decltype(vertices)::value_type);
-    const auto indexSize = sizeof(decltype(indices)::value_type);
+    const auto positionArraySize_bytes = mesh.mNumVertices * positionSize_bytes;
+    const auto normalArraySize_bytes = mesh.mNumVertices * normalSize_bytes;
+    const auto textureCoordArraySize_bytes = textureCoordinates.size() * textureCoordSize_bytes;
 
     // Load vertex data onto GPU.
     glGenVertexArrays(1, &this->vao);
@@ -61,32 +62,41 @@ Mesh::Mesh(const aiMesh &mesh, const aiMaterial &material, const std::string &te
     glBindVertexArray(this->vao);
     glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
     glBufferData(GL_ARRAY_BUFFER,
-                 static_cast<GLsizeiptr>(vertices.size() * vertexSize),
-                 vertices.data(), GL_STATIC_DRAW);
+                 positionArraySize_bytes + normalArraySize_bytes + textureCoordArraySize_bytes,
+                 nullptr, GL_STATIC_DRAW);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, positionArraySize_bytes, mesh.mVertices);
+    glBufferSubData(GL_ARRAY_BUFFER, positionArraySize_bytes, normalArraySize_bytes, mesh.mNormals);
+    glBufferSubData(GL_ARRAY_BUFFER, positionArraySize_bytes + normalArraySize_bytes,
+                    textureCoordArraySize_bytes, textureCoordinates.data());
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                 static_cast<GLsizeiptr>(indices.size() * indexSize),
+                 indices.size() * indexSize,
                  indices.data(), GL_STATIC_DRAW);
 
     // Define position attribute.
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, vertexSize,
-                          reinterpret_cast<GLvoid*>(Vertex::offsetOfPosition()));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, positionSize_bytes,
+                          reinterpret_cast<GLvoid*>(0));
 
     // Define normal attribute.
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, vertexSize,
-                          reinterpret_cast<GLvoid*>(Vertex::offsetOfNormal()));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, normalSize_bytes,
+                          reinterpret_cast<GLvoid*>(positionArraySize_bytes));
 
     // Define texture coordinate attribute.
     glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, vertexSize,
-                          reinterpret_cast<GLvoid*>(Vertex::offsetOfTextureCoordinate()));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, textureCoordSize_bytes,
+                          reinterpret_cast<GLvoid*>(positionArraySize_bytes + normalArraySize_bytes));
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    // Load textures.
+    this->ambientTextures = loadTexturesFromMaterial(material, aiTextureType_AMBIENT, textureDirectory);
+    this->diffuseTextures = loadTexturesFromMaterial(material, aiTextureType_DIFFUSE, textureDirectory);
+    this->specularTextures = loadTexturesFromMaterial(material, aiTextureType_SPECULAR, textureDirectory);
 }
 
 Mesh::~Mesh() {
