@@ -12,6 +12,7 @@ add_library(gl_util SHARED
     "src/model.cpp"
     "src/shader_program.cpp"
     "src/texture.cpp"
+    "src/uniform_buffer.cpp"
 )
 
 target_include_directories(gl_util

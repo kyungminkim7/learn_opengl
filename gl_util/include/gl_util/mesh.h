@@ -16,11 +16,15 @@ namespace gl {
 ///
 class Mesh
 {
-public:
+public:    
     ///
     /// \brief Generates a VAO, VBO and EBO for the mesh data,
     ///        loads texture data from the material and
     ///        loads all data onto the GPU.
+    /// \param mesh Assimp mesh data to load.
+    /// \param material Assimp material data to load for this mesh.
+    /// \param textureDirectory Directory path containing all of the
+    ///                         textures in this material.
     ///
     Mesh(const aiMesh &mesh, const aiMaterial &material, const std::string &textureDirectory);
 

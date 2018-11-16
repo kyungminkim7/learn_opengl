@@ -5,6 +5,7 @@
 #include <sstream>
 
 #include <glad/glad.h>
+#include <glm/gtc/type_ptr.hpp>
 #include <glm/mat3x3.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
@@ -185,12 +186,18 @@ ShaderProgram& ShaderProgram::setUniform(const std::string &name, const glm::vec
 }
 
 ShaderProgram& ShaderProgram::setUniform(const std::string &name, const glm::mat3 &m) {
-    glUniformMatrix3fv(glGetUniformLocation(this->id, name.c_str()), 1, GL_FALSE, &m[0][0]);
+    glUniformMatrix3fv(glGetUniformLocation(this->id, name.c_str()), 1, GL_FALSE, glm::value_ptr(m));
     return *this;
 }
 
 ShaderProgram& ShaderProgram::setUniform(const std::string &name, const glm::mat4 &m) {
-    glUniformMatrix4fv(glGetUniformLocation(this->id, name.c_str()), 1, GL_FALSE, &m[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(this->id, name.c_str()), 1, GL_FALSE, glm::value_ptr(m));
+    return *this;
+}
+
+ShaderProgram& ShaderProgram::setUniformBlockBinding(const std::string &uniformBlockName,
+                                                     unsigned int bindingPoint) {
+    glUniformBlockBinding(this->id, glGetUniformBlockIndex(this->id, uniformBlockName.c_str()), bindingPoint);
     return *this;
 }
 } // namespace gl
