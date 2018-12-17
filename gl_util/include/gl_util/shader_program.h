@@ -15,10 +15,14 @@ public:
     /// \brief Loads, compiles, and links given shaders into an OpenGL shader program.
     /// \param[in] vertexShaderPath Filepath of the vertex shader.
     /// \param[in] fragmentShaderPath Filepath of the fragment shader.
+    /// \param[in] geometryShaderPath Filepath of the geometry shader.
+    ///                               Empty string if no geometry shader is used.
     /// \exception std::ios_base::failure Failed to open either file.
     /// \exception gl::BuildError Failed to compile or link shaders.
     ///
-    ShaderProgram(const std::string &vertexShaderPath, const std::string &fragmentShaderPath);
+    ShaderProgram(const std::string &vertexShaderPath,
+                  const std::string &fragmentShaderPath,
+                  const std::string &geometryShaderPath = "");
 
     ///
     /// \brief Deletes the OpenGL shader program from the GPU.
