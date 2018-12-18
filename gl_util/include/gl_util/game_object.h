@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 #include <glm/fwd.hpp>
 
+#include <gl_util/mesh.h>
 #include <gl_util/model.h>
 
 namespace gl {
@@ -14,7 +15,7 @@ namespace gl {
 ///
 class GameObject {
 public:
-    GameObject() = default;
+    GameObject();
     GameObject(const std::string& modelFilepath);
 
     virtual ~GameObject() = default;
@@ -111,7 +112,7 @@ public:
     GameObject& translate(const glm::vec3 &translation);
 
     ///
-    /// \brief translateInBodyFrame Translates the game object in the local coordinate frame.
+    /// \brief translateInLocalFrame Translates the game object in the local coordinate frame.
     /// \param translation Amount to translate the game object by in the local coordinate frame.
     /// \return The game object to allow chaining of multiple rotation/translation calls.
     ///
@@ -120,10 +121,12 @@ public:
     GameObject& setScale(const glm::vec3 &scale);
 
 private:
+    using Meshes = std::vector<std::unique_ptr<gl::Mesh>>;
+
     Model model;
+    std::shared_ptr<Meshes> meshes;
 };
 
-inline void GameObject::render(ShaderProgram *shader) {this->model.render(shader);}
 inline glm::mat4 GameObject::getModelMatrix() const {return this->model.getModelMatrix();}
 inline glm::mat3 GameObject::getNormalMatrix() const {return this->model.getNormalMatrix();}
 

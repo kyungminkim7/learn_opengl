@@ -1,91 +1,10 @@
 #include <gl_util/model.h>
 
-#include <iostream>
-#include <unordered_map>
-
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
 #include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/mat4x4.hpp>
 
-#include <gl_util/gl_exception.h>
-#include <gl_util/texture.h>
-
-namespace {
-
-using ModelMeshes = std::vector<std::unique_ptr<gl::Mesh>>;
-
-std::unordered_map<std::string, std::weak_ptr<ModelMeshes>> cachedModelMeshes;
-
-///
-/// \brief loadModel Loads and caches mesh and texture data from model file.
-///
-/// Mesh and texture caches will automatically be cleaned up as the last
-/// reference to the returned shared_ptr<Meshes> is destroyed.
-///
-/// \param modelFilepath Absolute filepath to the model data.
-/// \return Shared pointer to the model data (meshes).
-/// \exception gl::LoadError Failed to load mesh data from model file.
-/// \exception gl::LoadError Failed to load texture image from file.
-///
-std::shared_ptr<ModelMeshes> loadModel(const std::string &modelFilepath);
-void processNode(ModelMeshes *meshes, const aiNode &node, const aiScene &scene, const std::string &modelDirectory);
-
-std::shared_ptr<ModelMeshes> loadModel(const std::string &modelFilepath) {
-    auto modelFilenameIndex = modelFilepath.find_last_of('/');
-    const auto modelDirectory = modelFilepath.substr(0, modelFilenameIndex);
-    const auto modelFilename = modelFilepath.substr(modelFilenameIndex + 1);
-
-    // Check cached meshes to avoid reloading
-    auto meshes = cachedModelMeshes[modelFilename].lock();
-    if (meshes) return meshes;
-
-    // Load meshes from file
-    Assimp::Importer importer;
-    const auto scene = importer.ReadFile(modelFilepath,
-                                         aiProcess_Triangulate | aiProcess_FlipUVs);
-
-    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-        throw gl::LoadError(importer.GetErrorString());
-    }
-
-    auto meshesDeleter = [modelFilename](auto meshes){
-        // Clear cache
-        cachedModelMeshes.erase(modelFilename);
-        delete meshes;
-    };
-    meshes = std::shared_ptr<ModelMeshes>(new ModelMeshes, meshesDeleter);
-
-    processNode(meshes.get(), *scene->mRootNode, *scene, modelDirectory);
-
-    std::cout << "Successfully loaded model from file: " << modelFilepath << "\n";
-    cachedModelMeshes[modelFilename] = meshes;
-    return meshes;
-}
-
-void processNode(ModelMeshes *meshes, const aiNode &node, const aiScene &scene, const std::string &modelDirectory) {
-    // Process node's meshes.
-    for (unsigned int i = 0; i < node.mNumMeshes; ++i) {
-        const auto mesh = scene.mMeshes[node.mMeshes[i]];
-        const auto material = scene.mMaterials[mesh->mMaterialIndex];
-        meshes->push_back(std::make_unique<gl::Mesh>(*mesh, *material, modelDirectory));
-    }
-
-    // Recursively process children nodes.
-    for (unsigned int i = 0; i < node.mNumChildren; ++i) {
-        processNode(meshes, *node.mChildren[i], scene, modelDirectory);
-    }
-}
-
-} // namespace
-
 namespace gl {
-
-Model::Model() : meshes(std::make_shared<ModelMeshes>()) {}
-
-Model::Model(const std::string& modelFilepath)
-    : meshes(loadModel(modelFilepath)) {}
 
 glm::mat4 Model::getModelMatrix() const {
     glm::mat4 modelMatrix(this->orientation);
@@ -163,10 +82,6 @@ Model& Model::setScale(const glm::vec3 &scale) {
 void Model::render(ShaderProgram *shader) {
     shader->setUniform("model", this->getModelMatrix())
             .setUniform("normal", this->getNormalMatrix());
-
-    for (const auto& mesh : *this->meshes) {
-        mesh->render(shader);
-    }
 }
 
 } // namespace gl

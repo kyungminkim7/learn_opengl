@@ -206,6 +206,11 @@ ShaderProgram& ShaderProgram::setUniform(const std::string &name, float x, float
     return *this;
 }
 
+ShaderProgram& ShaderProgram::setUniform(const std::string &name, const glm::vec2 &v) {
+    glUniform2f(glGetUniformLocation(this->id, name.c_str()), v.x, v.y);
+    return *this;
+}
+
 ShaderProgram& ShaderProgram::setUniform(const std::string &name, const glm::vec3 &v) {
     glUniform3f(glGetUniformLocation(this->id, name.c_str()), v.x, v.y, v.z);
     return *this;

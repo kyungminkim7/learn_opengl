@@ -4,32 +4,20 @@
 #include <string>
 #include <vector>
 
-#include <assimp/scene.h>
 #include <glm/fwd.hpp>
 #include <glm/mat3x3.hpp>
 #include <glm/vec3.hpp>
 
-#include <gl_util/mesh.h>
 #include <gl_util/shader_program.h>
 
 namespace gl {
 
 ///
-/// \brief Contains the pose and mesh data.
+/// \brief Contains the pose data.
 ///
 class Model
 {
 public:
-    Model();
-
-    ///
-    /// \brief Model Loads and creates a model from a file.
-    /// \param modelFilepath Absolute filepath to model data.
-    /// \exception gl::LoadError Failed to load mesh data from model file.
-    /// \exception gl::LoadError Failed to load texture image from file.
-    ///
-    explicit Model(const std::string &modelFilepath);
-
     glm::mat4 getModelMatrix() const;
 
     ///
@@ -83,6 +71,10 @@ public:
 
     Model& setScale(const glm::vec3 &scale);
 
+    ///
+    /// \brief render Sets the uniform model and normal matrices on the shader.
+    /// \param shader
+    ///
     void render(ShaderProgram *shader);
 
 private:
@@ -93,8 +85,6 @@ private:
 
     mutable glm::mat3 normalMatrix {1.0f};
     mutable bool normalMatrixIsValid = true;
-
-    std::shared_ptr<std::vector<std::unique_ptr<Mesh>>> meshes;
 };
 
 inline glm::vec3 Model::getPosition() const {return this->position;}

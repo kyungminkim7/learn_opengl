@@ -51,6 +51,7 @@ public:
     ShaderProgram& setUniform(const std::string &name, float value);
     ShaderProgram& setUniform(const std::string &name, float x, float y, float z);
     ShaderProgram& setUniform(const std::string &name, float x, float y, float z, float w);
+    ShaderProgram& setUniform(const std::string &name, const glm::vec2 &v);
     ShaderProgram& setUniform(const std::string &name, const glm::vec3 &v);
     ShaderProgram& setUniform(const std::string &name, const glm::mat3 &m);
     ShaderProgram& setUniform(const std::string &name, const glm::mat4 &m);
