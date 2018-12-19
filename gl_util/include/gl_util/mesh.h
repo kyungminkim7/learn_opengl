@@ -14,8 +14,7 @@ namespace gl {
 /// \brief Aggregates vertex and index data to load onto the GPU
 ///        and render onto the screen.
 ///
-class Mesh
-{
+class Mesh {
 public:    
     ///
     /// \brief Generates a VAO, VBO and EBO for the mesh data,
@@ -31,9 +30,14 @@ public:
     ///
     /// \brief Deletes VAO, VBO and EBO data from the GPU.
     ///
-    ~Mesh();
+    virtual ~Mesh();
 
     void render(ShaderProgram *shader);
+
+protected:
+    unsigned int getNumIndices() const;
+    void bindVao();
+    void bindTextures(ShaderProgram *shader);
 
 private:
     unsigned int vao;
@@ -45,5 +49,7 @@ private:
     std::vector<Texture> diffuseTextures;
     std::vector<Texture> specularTextures;
 };
+
+inline unsigned int Mesh::getNumIndices() const {return this->numIndices;}
 
 } // namespace gl

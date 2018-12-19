@@ -16,6 +16,14 @@ namespace gl {
 class GameObject {
 public:
     GameObject();
+
+    ///
+    /// \brief GameObject Loads vertex and texture data and creates a model
+    ///                   for the game object.
+    /// \param modelFilepath Filepath to the model data.
+    /// \exception gl::LoadError Failed to load mesh data from model file.
+    /// \exception gl::LoadError Failed to load texture image from file.
+    ///
     GameObject(const std::string& modelFilepath);
 
     virtual ~GameObject() = default;
@@ -122,8 +130,8 @@ public:
 
 private:
     using Meshes = std::vector<std::unique_ptr<gl::Mesh>>;
-
     Model model;
+
     std::shared_ptr<Meshes> meshes;
 };
 

@@ -8,6 +8,8 @@ add_library(gl_util SHARED
     "src/camera.cpp"
     "src/game_object.cpp"
     "src/glfw_util.cpp"
+    "src/instancing_game_objects.cpp"
+    "src/instancing_mesh.cpp"
     "src/mesh.cpp"
     "src/model.cpp"
     "src/shader_program.cpp"

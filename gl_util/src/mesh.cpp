@@ -106,6 +106,20 @@ Mesh::~Mesh() {
 }
 
 void Mesh::render(ShaderProgram *shader) {
+    this->bindTextures(shader);
+
+    // Draw mesh
+    glBindVertexArray(this->vao);
+    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(this->numIndices),
+                   GL_UNSIGNED_INT, reinterpret_cast<const GLvoid*>(0));
+    glBindVertexArray(0);
+}
+
+void Mesh::bindVao() {
+    glBindVertexArray(this->vao);
+}
+
+void Mesh::bindTextures(ShaderProgram *shader) {
     // Bind textures
     int textureUnit = 0;
 
@@ -128,12 +142,6 @@ void Mesh::render(ShaderProgram *shader) {
     }
 
     glActiveTexture(GL_TEXTURE0);
-
-    // Draw mesh
-    glBindVertexArray(this->vao);
-    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(this->numIndices),
-                   GL_UNSIGNED_INT, reinterpret_cast<const GLvoid*>(0));
-    glBindVertexArray(0);
 }
 
 } // namespace gl

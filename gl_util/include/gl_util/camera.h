@@ -52,7 +52,7 @@ public:
     ///     3. 'a' - left
     ///     4. 'd' - right
     ///
-    /// This movement speed may be modified through Camera::setMovementSpeed().
+    /// This movement speed may be modified through Camera::setLinearSpeed().
     ///
     /// \param window The window that received the event.
     /// \param key The key that was pressed/released.
