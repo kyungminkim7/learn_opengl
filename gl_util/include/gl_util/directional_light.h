@@ -24,7 +24,7 @@ public:
     DirectionalLight(float left, float right, float bottom, float top, float nearPlane, float farPlane);
 
     ///
-    /// \brief getProjectionMatrix returns the orthonormal projection matrix of the light.
+    /// \brief getProjectionMatrix Returns the orthonormal projection matrix of the light.
     /// \return The orthonormal projection matrix of the light.
     ///
     glm::mat4 getProjectionMatrix() const;
