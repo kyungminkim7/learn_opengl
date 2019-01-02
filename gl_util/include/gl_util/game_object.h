@@ -6,10 +6,11 @@
 #include <GLFW/glfw3.h>
 #include <glm/fwd.hpp>
 
-#include <gl_util/mesh.h>
-#include <gl_util/model.h>
+#include "model.h"
 
 namespace gl {
+
+class Mesh;
 
 ///
 /// \brief The GameObject class represents an object in the 3D virtual world.

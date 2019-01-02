@@ -7,6 +7,9 @@
 
 #include <glm/vec2.hpp>
 
+#include <gl_util/shader_program.h>
+#include <gl_util/texture.h>
+
 namespace {
 
 std::vector<gl::Texture> loadTexturesFromMaterial(const aiMaterial &material, aiTextureType type, const std::string &modelDirectory) {

@@ -5,10 +5,10 @@
 #include <assimp/material.h>
 #include <assimp/mesh.h>
 
-#include <gl_util/shader_program.h>
-#include <gl_util/texture.h>
-
 namespace gl {
+
+class ShaderProgram;
+class Texture;
 
 ///
 /// \brief Aggregates vertex and index data to load onto the GPU

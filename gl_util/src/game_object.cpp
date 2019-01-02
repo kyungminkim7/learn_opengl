@@ -10,6 +10,7 @@
 #include <glm/mat4x4.hpp>
 
 #include <gl_util/gl_exception.h>
+#include <gl_util/mesh.h>
 #include <gl_util/texture.h>
 
 namespace {

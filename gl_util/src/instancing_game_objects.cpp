@@ -10,6 +10,7 @@
 #include <glm/mat4x4.hpp>
 #include <glad/glad.h>
 
+#include <gl_util/instancing_mesh.h>
 #include <gl_util/gl_exception.h>
 
 namespace {

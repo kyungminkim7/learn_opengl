@@ -4,6 +4,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/mat4x4.hpp>
 
+#include <gl_util/shader_program.h>
+
 namespace gl {
 
 glm::mat4 Model::getModelMatrix() const {

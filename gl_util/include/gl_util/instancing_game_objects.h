@@ -7,10 +7,11 @@
 
 #include <assimp/scene.h>
 
-#include <gl_util/instancing_mesh.h>
-#include <gl_util/model.h>
+#include "model.h"
 
 namespace gl {
+
+class InstancingMesh;
 
 ///
 /// \brief The InstancingGameObjects class allows drawing lots of models

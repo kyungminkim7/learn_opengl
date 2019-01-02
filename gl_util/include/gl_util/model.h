@@ -8,9 +8,9 @@
 #include <glm/mat3x3.hpp>
 #include <glm/vec3.hpp>
 
-#include <gl_util/shader_program.h>
-
 namespace gl {
+
+class ShaderProgram;
 
 ///
 /// \brief Contains the pose data.

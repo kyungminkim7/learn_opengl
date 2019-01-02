@@ -2,6 +2,7 @@
 /// Draws transparent objects.
 
 #define GLM_ENABLE_EXPERIMENTAL
+#include <algorithm>
 #include <chrono>
 #include <iostream>
 #include <memory>

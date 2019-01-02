@@ -2,6 +2,7 @@
 /// Culls the side of the cubes facing the camera.
 
 #define GLM_ENABLE_EXPERIMENTAL
+#include <algorithm>
 #include <chrono>
 #include <iostream>
 #include <memory>

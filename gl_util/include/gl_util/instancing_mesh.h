@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gl_util/mesh.h>
+#include "mesh.h"
 
 namespace gl {
 

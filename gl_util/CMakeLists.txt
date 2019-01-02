@@ -13,6 +13,7 @@ add_library(gl_util SHARED
     "src/instancing_mesh.cpp"
     "src/mesh.cpp"
     "src/model.cpp"
+    "src/point_light.cpp"
     "src/shader_program.cpp"
     "src/texture.cpp"
     "src/uniform_buffer.cpp"

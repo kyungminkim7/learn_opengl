@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gl_util/game_object.h>
+#include "game_object.h"
 
 #include <chrono>
 
