@@ -27,6 +27,12 @@ public:
     ///
     Mesh(const aiMesh &mesh, const aiMaterial &material, const std::string &textureDirectory);
 
+    Mesh(const std::vector<float> &positions,
+         const std::vector<float> &normals,
+         const std::vector<float> &textureCoords,
+         const std::vector<unsigned int> &indices,
+         const std::string &textureFilepath="");
+
     ///
     /// \brief Deletes VAO, VBO and EBO data from the GPU.
     ///

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <chrono>
+#include <vector>
 
 #include <GLFW/glfw3.h>
 #include <glm/fwd.hpp>
@@ -25,6 +26,12 @@ public:
     /// \exception gl::LoadError Failed to load texture image from file.
     ///
     GameObject(const std::string& modelFilepath);
+
+    GameObject(const std::vector<float> &positions,
+               const std::vector<float> &normals,
+               const std::vector<float> &textureCoords,
+               const std::vector<unsigned int> &indices,
+               const std::string &textureFilepath="");
 
     virtual ~GameObject() = default;
 
@@ -92,6 +99,8 @@ public:
     ///
     glm::mat3 getNormalMatrix() const;
 
+    glm::mat4 getViewMatrix() const;
+
     GameObject& setPosition(const glm::vec3 &position);
     glm::vec3 getPosition() const;
 
@@ -103,6 +112,32 @@ public:
     glm::vec3 getOrientationX() const;
     glm::vec3 getOrientationY() const;
     glm::vec3 getOrientationZ() const;
+
+    /// \name Look At
+    ///
+    /// Points the game object at a desired point or direction.
+    ///
+    /// If the new direction is linearly dependent with the game object's original normal,
+    /// make sure to call GameObject::setNormal...() afterwards to properly set the new orientation.
+    ///@{
+    GameObject& setLookAtPoint(const glm::vec3 &lookAtPoint);
+    GameObject& setLookAtDirection(const glm::vec3 &lookAtDirection);
+    ///@}
+
+    glm::vec3 getLookAtDirection() const;
+
+    /// \name Normal
+    ///
+    /// Sets the game object's normal.
+    ///
+    /// If the new normal direction is linearly dependent with the game object's original
+    /// look at direction, make sure to call GameObject::setLookAt...() afterwards to properly
+    /// set the new orientation.
+    ///@{
+    GameObject& setNormalDirection(const glm::vec3 &normalDirection);
+    ///@>
+
+    glm::vec3 getNormalDirection() const;
 
     ///
     /// \brief rotate Rotates the game object about an axis in the world coordinate frame.
@@ -137,6 +172,7 @@ private:
 
 inline glm::mat4 GameObject::getModelMatrix() const {return this->model.getModelMatrix();}
 inline glm::mat3 GameObject::getNormalMatrix() const {return this->model.getNormalMatrix();}
+inline glm::mat4 GameObject::getViewMatrix() const {return this->model.getViewMatrix();}
 
 inline GameObject& GameObject::setPosition(const glm::vec3 &position) {
     this->model.setPosition(position);
@@ -161,6 +197,25 @@ inline glm::mat3 GameObject::getOrientation() const {return this->model.getOrien
 inline glm::vec3 GameObject::getOrientationX() const {return this->model.getOrientationX();}
 inline glm::vec3 GameObject::getOrientationY() const {return this->model.getOrientationY();}
 inline glm::vec3 GameObject::getOrientationZ() const {return this->model.getOrientationZ();}
+
+inline GameObject& GameObject::setLookAtPoint(const glm::vec3 &lookAtPoint) {
+    this->model.setLookAtPoint(lookAtPoint);
+    return *this;
+}
+
+inline GameObject& GameObject::setLookAtDirection(const glm::vec3 &lookAtDirection) {
+    this->model.setLookAtDirection(lookAtDirection);
+    return *this;
+}
+
+inline glm::vec3 GameObject::getLookAtDirection() const {return this->model.getLookAtDirection();}
+
+inline GameObject& GameObject::setNormalDirection(const glm::vec3 &normalDirection) {
+    this->model.setNormalDirection(normalDirection);
+    return *this;
+}
+
+inline glm::vec3 GameObject::getNormalDirection() const {return this->model.getNormalDirection();}
 
 inline GameObject& GameObject::rotate(float angle_rad, const glm::vec3 &axis) {
     this->model.rotate(angle_rad, axis);

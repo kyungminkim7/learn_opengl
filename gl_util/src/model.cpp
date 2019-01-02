@@ -25,6 +25,12 @@ glm::mat3 Model::getNormalMatrix() const {
     return this->normalMatrix;
 }
 
+glm::mat4 Model::getViewMatrix() const {
+    return glm::lookAt(this->getPosition(),
+                       this->getPosition() + this->getOrientationX(),
+                       this->getOrientationZ());
+}
+
 Model& Model::setPosition(const glm::vec3 &position) {
     this->position = position;
 
@@ -47,6 +53,27 @@ Model& Model::setOrientation(const glm::vec3 &orientationX,
     this->orientation[2] = orientationZ;
 
     this->normalMatrixIsValid = false;
+    return *this;
+}
+
+Model& Model::setLookAtPoint(const glm::vec3 &lookAtPoint) {
+    this->setLookAtDirection(lookAtPoint - this->getPosition());
+    return *this;
+}
+
+Model& Model::setLookAtDirection(const glm::vec3 &lookAtDirection) {
+    auto orientationX = glm::normalize(lookAtDirection);
+    auto orientationY = glm::normalize(glm::cross(this->getOrientationZ(), orientationX));
+    auto orientationZ = glm::normalize(glm::cross(orientationX, orientationY));
+    this->setOrientation(orientationX, orientationY, orientationZ);
+    return *this;
+}
+
+Model& Model::setNormalDirection(const glm::vec3 &normalDirection) {
+    auto orientationZ = glm::normalize(normalDirection);
+    auto orientationY = glm::normalize(glm::cross(orientationZ, this->getOrientationX()));
+    auto orientationX = glm::normalize(glm::cross(orientationY, orientationZ));
+    this->setOrientation(orientationX, orientationY, normalDirection);
     return *this;
 }
 

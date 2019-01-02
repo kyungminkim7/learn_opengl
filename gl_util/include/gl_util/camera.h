@@ -81,34 +81,6 @@ public:
     ///
     void onScrollInput(GLFWwindow *window, double xOffset, double yOffset) override;
 
-    /// \name Look At
-    ///
-    /// Points the camera at a desired point or direction.
-    ///
-    /// If the new camera direction is linearly dependent with the camera's original normal,
-    /// make sure to call Camera::setNormal...() afterwards to properly set the new orientation.
-    ///@{
-    void setLookAtPoint(const glm::vec3& lookAtPoint);
-    void setLookAtDirection(const glm::vec3& lookAtDirection);
-    ///@}
-
-    glm::vec3 getLookAtDirection() const;
-
-    /// \name Normal
-    ///
-    /// Sets the camera's normal.
-    ///
-    /// If the new camera's normal direction is linearly dependent with the camera's original
-    /// look at direction, make sure to call Camera::setLookAt...() afterwards to properly
-    /// set the new orientation.
-    ///@{
-    void setNormalDirection(const glm::vec3 &normalDirection);
-    ///@>
-
-    glm::vec3 getNormalDirection() const;
-
-    glm::mat4 getViewMatrix() const;
-
     void setMaxFov(float fov_deg);
 
     ///
@@ -168,8 +140,5 @@ private:
     double lastCursorX = 0.0;
     double lastCursorY = 0.0;
 };
-
-inline glm::vec3 Camera::getLookAtDirection() const {return this->getOrientationX();}
-inline glm::vec3 Camera::getNormalDirection() const {return this->getOrientationZ();}
 
 } // namespace gl

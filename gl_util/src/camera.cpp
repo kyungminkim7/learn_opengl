@@ -2,10 +2,7 @@
 
 #include <gl_util/camera.h>
 
-#include <glm/gtc/matrix_access.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/norm.hpp>
-#include <iostream>
 
 namespace {
 constexpr float MIN_FOV_DEG = 1.0f;
@@ -79,32 +76,6 @@ void Camera::onCursorMoved(GLFWwindow *window, double cursorX, double cursorY) {
 void Camera::onScrollInput(GLFWwindow *window, double xOffset, double yOffset) {
     this->setCurrentFov(static_cast<float>(this->currentFov_deg -
                                            this->scrollSensitivity * yOffset));
-}
-
-void Camera::setLookAtPoint(const glm::vec3 &lookAtPoint) {
-    this->setLookAtDirection(lookAtPoint - this->getPosition());
-}
-
-void Camera::setLookAtDirection(const glm::vec3 &lookAtDirection) {
-    auto orientationX = glm::normalize(lookAtDirection);
-    auto orientationY = glm::normalize(glm::cross(this->getOrientationZ(), orientationX));
-    auto orientationZ = glm::normalize(glm::cross(orientationX, orientationY));
-
-    this->setOrientation(orientationX, orientationY, orientationZ);
-}
-
-void Camera::setNormalDirection(const glm::vec3 &normalDirection) {
-    auto orientationZ = glm::normalize(normalDirection);
-    auto orientationY = glm::normalize(glm::cross(orientationZ, this->getOrientationX()));
-    auto orientationX = glm::normalize(glm::cross(orientationY, orientationZ));
-
-    this->setOrientation(orientationX, orientationY, normalDirection);
-}
-
-glm::mat4 Camera::getViewMatrix() const {
-    return glm::lookAt(this->getPosition(),
-                       this->getPosition() + this->getOrientationX(),
-                       this->getOrientationZ());;
 }
 
 void Camera::setMaxFov(float fov_deg) {

@@ -141,6 +141,7 @@ int main() {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             defaultShader.use()
+                    .setUniform("viewPosition", cam->getPosition())
                     .setUniform("blinn", blinn ? 1 : 0);
 
             // Render light

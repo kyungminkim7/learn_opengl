@@ -84,6 +84,13 @@ namespace gl {
 
 GameObject::GameObject() : meshes(std::make_shared<Meshes>()) {}
 GameObject::GameObject(const std::string &modelFilepath) : meshes(loadMeshes(modelFilepath)) {}
+GameObject::GameObject(const std::vector<float> &positions,
+                       const std::vector<float> &normals,
+                       const std::vector<float> &textureCoords,
+                       const std::vector<unsigned int> &indices,
+                       const std::string &textureFilepath) : meshes(std::make_shared<Meshes>()) {
+    meshes->push_back(std::make_unique<gl::Mesh>(positions, normals, textureCoords, indices, textureFilepath));
+}
 
 void GameObject::onUpdate(std::chrono::duration<float> updateDuration) {}
 

@@ -6,6 +6,7 @@ find_package(glfw3 REQUIRED)
 
 add_library(gl_util SHARED
     "src/camera.cpp"
+    "src/directional_light.cpp"
     "src/game_object.cpp"
     "src/glfw_util.cpp"
     "src/instancing_game_objects.cpp"

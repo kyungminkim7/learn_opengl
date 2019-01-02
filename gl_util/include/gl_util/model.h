@@ -35,6 +35,8 @@ public:
     ///
     glm::mat3 getNormalMatrix() const;
 
+    glm::mat4 getViewMatrix() const;
+
     Model& setPosition(const glm::vec3 &position);
     glm::vec3 getPosition() const;
 
@@ -46,6 +48,32 @@ public:
     glm::vec3 getOrientationX() const;
     glm::vec3 getOrientationY() const;
     glm::vec3 getOrientationZ() const;
+
+    /// \name Look At
+    ///
+    /// Points the model at a desired point or direction.
+    ///
+    /// If the new direction is linearly dependent with the model's original normal,
+    /// make sure to call Model::setNormal...() afterwards to properly set the new orientation.
+    ///@{
+    Model& setLookAtPoint(const glm::vec3 &lookAtPoint);
+    Model& setLookAtDirection(const glm::vec3 &lookAtDirection);
+    ///@}
+
+    glm::vec3 getLookAtDirection() const;
+
+    /// \name Normal
+    ///
+    /// Sets the model's normal.
+    ///
+    /// If the new normal direction is linearly dependent with the model's original
+    /// look at direction, make sure to call Model::setLookAt...() afterwards to properly
+    /// set the new orientation.
+    ///@{
+    Model& setNormalDirection(const glm::vec3 &normalDirection);
+    ///@>
+
+    glm::vec3 getNormalDirection() const;
 
     ///
     /// \brief rotate Rotates the model about an axis in the world coordinate frame.
@@ -92,5 +120,7 @@ inline glm::mat3 Model::getOrientation() const {return this->orientation;}
 inline glm::vec3 Model::getOrientationX() const {return this->orientation[0];}
 inline glm::vec3 Model::getOrientationY() const {return this->orientation[1];}
 inline glm::vec3 Model::getOrientationZ() const {return this->orientation[2];}
+inline glm::vec3 Model::getLookAtDirection() const {return this->orientation[0];}
+inline glm::vec3 Model::getNormalDirection() const {return this->orientation[2];}
 
 } // namespace gl
