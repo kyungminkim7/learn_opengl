@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector>
+#include <array>
 
 #include "game_object.h"
 
@@ -19,7 +19,7 @@ public:
     /// and view matrices for each side of a cubemap for use in shadow mapping.
     /// \return 6 transformations for projecting shadows onto a cubemap.
     ///
-    std::vector<glm::mat4> getShadowTransforms() const;
+    std::array<glm::mat4, 6> getShadowTransforms() const;
 
     float getNearPlane() const;
     float getFarPlane() const;
