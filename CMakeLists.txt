@@ -4,10 +4,10 @@ project(learn_opengl VERSION 1.0.0)
 add_subdirectory(extern)
 
 add_library(lgl
-    src/Frame.cpp
-    src/Shader.cpp
+    #src/Frame.cpp
+    #src/Shader.cpp
     src/ShaderProgram.cpp
-    src/VertexArrayObject.cpp
+    #src/VertexArrayObject.cpp
 )
 add_library(lgl::lgl ALIAS lgl)
 
@@ -31,3 +31,5 @@ target_link_libraries(lgl PUBLIC
 target_compile_features(lgl PUBLIC cxx_std_14)
 
 file(COPY textures DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+
+add_subdirectory(l1_hello_window)
