@@ -5,7 +5,7 @@ add_subdirectory(extern)
 
 add_library(lgl
     #src/Frame.cpp
-    #src/Shader.cpp
+    src/Shader.cpp
     src/ShaderProgram.cpp
     #src/VertexArrayObject.cpp
 )
@@ -33,3 +33,4 @@ target_compile_features(lgl PUBLIC cxx_std_14)
 file(COPY textures DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_subdirectory(l1_hello_window)
+add_subdirectory(l2_hello_triangle)
