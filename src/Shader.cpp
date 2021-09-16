@@ -1,12 +1,8 @@
 #include <lgl/Shader.h>
 
+#include <fstream>
+#include <sstream>
 #include <vector>
-
-#include <errno.h>
-#include <fcntl.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <unistd.h>
 
 #include <glad/glad.h>
 
@@ -23,32 +19,17 @@ Shader::Shader(const std::string &pathname, int type) :
     shader(new unsigned int(glCreateShader(type)), shaderDeleter) {
 
     // Read shader source file
-    auto fdDeleter = [pathname](int *fd){
-        auto status = close(*fd);
-        delete fd;
-        if (status == -1) {
-            throw BuildError("Failed to close() " + pathname + " - " + strerror(errno));
-        }
-    };
-    std::unique_ptr<int, decltype(fdDeleter)> fd(
-                new int(open(pathname.c_str(), O_RDONLY)),
-                fdDeleter);
-    if (*fd == -1) {
-        throw BuildError("Failed to open() " + pathname + " - " + strerror(errno));
-    }
+    std::ifstream file;
+    file.exceptions(std::ios_base::badbit | std::ios_base::failbit);
+    file.open(pathname);
 
-    struct stat statbuf;
-    if (fstat(*fd, &statbuf) == -1) {
-        throw BuildError("Failed to fstat() " + pathname + " - " + strerror(errno));
-    }
+    std::stringstream ss;
+    ss << file.rdbuf();
+    auto shaderCode = ss.str();
+    auto shaderCodeStr = shaderCode.c_str();
 
-    std::unique_ptr<char[]> buffer(new char[statbuf.st_size]);
-    if (read(*fd, buffer.get(), statbuf.st_size) != statbuf.st_size) {
-        throw BuildError("Failed to read() from " + pathname + " - " + strerror(errno));
-    }
-
-    auto shaderCode = buffer.get();
-    glShaderSource(*this->shader, 1, &shaderCode, NULL);
+    // Compile shader
+    glShaderSource(*this->shader, 1, &shaderCodeStr, NULL);
     glCompileShader(*this->shader);
 
     int status;
@@ -58,8 +39,16 @@ Shader::Shader(const std::string &pathname, int type) :
         glGetShaderiv(*this->shader, GL_INFO_LOG_LENGTH, &logLength);
         std::vector<char> log(logLength);
         glGetShaderInfoLog(*this->shader, logLength, nullptr, log.data());
-        throw BuildError(std::string(log.begin(), log.end()));
+        throw BuildError(std::string(log.cbegin(), log.cend()));
     }
+}
+
+void Shader::attachToShaderProgram(unsigned int program) {
+    glAttachShader(program, *this->shader);
+}
+
+void Shader::detachFromShaderProgram(unsigned int program) {
+    glDetachShader(program, *this->shader);
 }
 
 } // namespace lgl
