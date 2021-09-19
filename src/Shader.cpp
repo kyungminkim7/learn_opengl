@@ -1,7 +1,7 @@
 #include <lgl/Shader.h>
 
+#include <iterator>
 #include <fstream>
-#include <sstream>
 #include <vector>
 
 #include <glad/glad.h>
@@ -19,17 +19,14 @@ Shader::Shader(const std::string &pathname, int type) :
     shader(new unsigned int(glCreateShader(type)), shaderDeleter) {
 
     // Read shader source file
-    std::ifstream file;
-    file.exceptions(std::ios_base::badbit | std::ios_base::failbit);
-    file.open(pathname);
-
-    std::stringstream ss;
-    ss << file.rdbuf();
-    auto shaderCode = ss.str();
-    auto shaderCodeStr = shaderCode.c_str();
+    std::ifstream file(pathname);
+    std::vector<char> shaderCode((std::istreambuf_iterator<char>(file)),
+                                 std::istreambuf_iterator<char>());
+    shaderCode.resize(shaderCode.size() + 1);
+    auto shaderCodePtr = &shaderCode[0];
 
     // Compile shader
-    glShaderSource(*this->shader, 1, &shaderCodeStr, NULL);
+    glShaderSource(*this->shader, 1, &shaderCodePtr, NULL);
     glCompileShader(*this->shader);
 
     int status;
