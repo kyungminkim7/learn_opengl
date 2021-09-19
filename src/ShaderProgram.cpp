@@ -1,5 +1,6 @@
 #include <lgl/ShaderProgram.h>
 
+#include <cassert>
 #include <vector>
 
 #include <glad/glad.h>
@@ -40,6 +41,18 @@ ShaderProgram::ShaderProgram(const std::string &vertexShaderPathname,
 
 void ShaderProgram::use() const {
     glUseProgram(*this->program);
+}
+
+void ShaderProgram::setUniform(const std::string &name, float value) {
+    auto location = glGetUniformLocation(*this->program, name.c_str());
+    assert(("Failed to glGetUniformLocation()", location != -1));
+    glUniform1f(location, value);
+}
+
+void ShaderProgram::setUniform(const std::string &name, const glm::vec4 &value) {
+    auto location = glGetUniformLocation(*this->program, name.c_str());
+    assert(("Failed to glGetUniformLocation()", location != -1));
+    glUniform4f(location, value.x, value.y, value.z, value.w);
 }
 
 } // namespace lgl

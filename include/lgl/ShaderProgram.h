@@ -4,6 +4,8 @@
 #include <memory>
 #include <string>
 
+#include <glm/vec4.hpp>
+
 namespace lgl {
 
 class ShaderProgram {
@@ -12,6 +14,9 @@ public:
                   const std::string &fragmentShaderPathname);
 
     void use() const;
+
+    void setUniform(const std::string &name, float value);
+    void setUniform(const std::string &name, const glm::vec4 &value);
 
 private:
     using ProgramDeleter = std::function<void(unsigned int *)>;
