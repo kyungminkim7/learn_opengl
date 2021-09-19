@@ -22,11 +22,11 @@ Shader::Shader(const std::string &pathname, int type) :
     std::ifstream file(pathname);
     std::vector<char> shaderCode((std::istreambuf_iterator<char>(file)),
                                  std::istreambuf_iterator<char>());
-    shaderCode.resize(shaderCode.size() + 1);
     auto shaderCodePtr = &shaderCode[0];
+    std::array<int, 1> shaderCodeLength{static_cast<int>(shaderCode.size())};
 
     // Compile shader
-    glShaderSource(*this->shader, 1, &shaderCodePtr, NULL);
+    glShaderSource(*this->shader, 1, &shaderCodePtr, &shaderCodeLength[0]);
     glCompileShader(*this->shader);
 
     int status;
