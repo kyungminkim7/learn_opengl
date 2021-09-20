@@ -8,7 +8,7 @@ namespace lgl {
 
 class Texture2D {
 public:
-    Texture2D(const std::string &pathname);
+    explicit Texture2D(const std::string &pathname);
 
     void bind();
 
