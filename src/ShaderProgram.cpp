@@ -49,6 +49,12 @@ void ShaderProgram::setUniform(const std::string &name, float value) {
     glUniform1f(location, value);
 }
 
+void ShaderProgram::setUniform(const std::string &name, int value) {
+    auto location = glGetUniformLocation(*this->program, name.c_str());
+    assert(("Failed to glGetUniformLocation()", location != -1));
+    glUniform1i(location, value);
+}
+
 void ShaderProgram::setUniform(const std::string &name, const glm::vec4 &value) {
     auto location = glGetUniformLocation(*this->program, name.c_str());
     assert(("Failed to glGetUniformLocation()", location != -1));
