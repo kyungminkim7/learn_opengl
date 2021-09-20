@@ -15,7 +15,7 @@ void deleteShader(unsigned int *shader) {
     delete shader;
 }
 
-}
+} // namespace
 
 namespace lgl {
 
