@@ -1,6 +1,5 @@
 #pragma once
 
-#include <functional>
 #include <memory>
 #include <string>
 
@@ -13,10 +12,7 @@ public:
     void detachFromShaderProgram(unsigned int program);
 
 private:
-    using ShaderDeleter = std::function<void(unsigned int *)>;
-    static ShaderDeleter shaderDeleter;
-
-    std::unique_ptr<unsigned int, ShaderDeleter> shader;
+    std::unique_ptr<unsigned int, void(*)(unsigned int *)> shader;
 };
 
 } // namespace lgl

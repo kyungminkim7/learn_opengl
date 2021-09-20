@@ -8,15 +8,19 @@
 
 #include <lgl/Exception.h>
 
-namespace lgl {
+namespace {
 
-Shader::ShaderDeleter Shader::shaderDeleter = [](auto shader) {
+void deleteShader(unsigned int *shader) {
     glDeleteShader(*shader);
     delete shader;
-};
+}
+
+}
+
+namespace lgl {
 
 Shader::Shader(const std::string &pathname, int type) :
-    shader(new unsigned int(glCreateShader(type)), shaderDeleter) {
+    shader(new unsigned int(glCreateShader(type)), deleteShader) {
 
     // Read shader source file
     std::ifstream file(pathname);
