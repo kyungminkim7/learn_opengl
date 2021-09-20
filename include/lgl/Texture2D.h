@@ -13,10 +13,7 @@ public:
     void bind();
 
 private:
-    using TextureDeleter = std::function<void(unsigned int *)>;
-    static TextureDeleter textureDeleter;
-
-    std::unique_ptr<unsigned int, TextureDeleter> texture;
+    std::unique_ptr<unsigned int, void(*)(unsigned int *)> texture;
 };
 
 } // namespace lgl
