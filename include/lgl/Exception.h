@@ -20,4 +20,9 @@ public:
     explicit BuildError(const std::string &whatArg) : Error(whatArg) {}
 };
 
+class LoadError : public Error {
+public:
+    explicit LoadError(const std::string &whatArg) : Error(whatArg) {}
+};
+
 } // namespace lgl
