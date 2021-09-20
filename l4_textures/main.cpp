@@ -38,60 +38,61 @@ int main(int argc, char *argv[]) {
     glViewport(0, 0, windowWidth, windowHeight);
     glfwSetFramebufferSizeCallback(window, onFramebufferSizeChanged);
 
-    lgl::ShaderProgram shaderProgram("default.vert", "default.frag");
+    {
+        lgl::ShaderProgram shaderProgram("default.vert", "default.frag");
 
-    // Setup world
-    std::vector<float> vertices {
+        // Setup world
+        std::vector<float> vertices {
         // positions        colors	      texture coords
          0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // top right
          0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // bottom right
         -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left
         -0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f  // top left
-    };
+        };
 
-    std::vector<unsigned int> indices {
+        std::vector<unsigned int> indices {
         0, 1, 2,
         2, 3, 0
-    };
+        };
 
-    unsigned int vao;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
+        unsigned int vao;
+        glGenVertexArrays(1, &vao);
+        glBindVertexArray(vao);
 
-    unsigned int vbo;
-    glGenBuffers(1, &vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(decltype(vertices)::value_type),
-                 vertices.data(), GL_STATIC_DRAW);
+        unsigned int vbo;
+        glGenBuffers(1, &vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(decltype(vertices)::value_type),
+             vertices.data(), GL_STATIC_DRAW);
 
-    // Position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(decltype(vertices)::value_type),
-                          static_cast<void *>(0));
-    glEnableVertexAttribArray(0);
+        // Position attribute
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(decltype(vertices)::value_type),
+                  static_cast<void *>(0));
+        glEnableVertexAttribArray(0);
 
-    // Color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(decltype(vertices)::value_type),
-                          reinterpret_cast<void *>(3 * sizeof(decltype(vertices)::value_type)));
-    glEnableVertexAttribArray(1);
+        // Color attribute
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(decltype(vertices)::value_type),
+                  reinterpret_cast<void *>(3 * sizeof(decltype(vertices)::value_type)));
+        glEnableVertexAttribArray(1);
 
-    // Texture coordinate attribute
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(decltype(vertices)::value_type),
-                          reinterpret_cast<void *>(6 * sizeof(decltype(vertices)::value_type)));
-    glEnableVertexAttribArray(2);
+        // Texture coordinate attribute
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(decltype(vertices)::value_type),
+                  reinterpret_cast<void *>(6 * sizeof(decltype(vertices)::value_type)));
+        glEnableVertexAttribArray(2);
 
-    unsigned int ebo;
-    glGenBuffers(1, &ebo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(decltype(indices)::value_type),
-                 indices.data(), GL_STATIC_DRAW);
+        unsigned int ebo;
+        glGenBuffers(1, &ebo);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(decltype(indices)::value_type),
+             indices.data(), GL_STATIC_DRAW);
 
-    lgl::Texture2D containerTexture("../textures/container.jpg");
-    lgl::Texture2D faceTexture("../textures/awesomeface.png");
-    shaderProgram.use();
-    shaderProgram.setUniform("texture0", 0);
-    shaderProgram.setUniform("texture1", 1);
+        lgl::Texture2D containerTexture("../textures/container.jpg");
+        lgl::Texture2D faceTexture("../textures/awesomeface.png");
+        shaderProgram.use();
+        shaderProgram.setUniform("texture0", 0);
+        shaderProgram.setUniform("texture1", 1);
 
-    while (!glfwWindowShouldClose(window)) {
+        while (!glfwWindowShouldClose(window)) {
         processInput(window);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -110,6 +111,7 @@ int main(int argc, char *argv[]) {
 
         glfwSwapBuffers(window);
         glfwPollEvents();
+        }
     }
 
     glfwTerminate();
