@@ -8,16 +8,18 @@
 #include <lgl/Exception.h>
 #include <lgl/Shader.h>
 
-namespace lgl {
-
-ShaderProgram::ProgramDeleter ShaderProgram::programDeleter = [](auto program) {
+namespace {
+void deleteProgram(unsigned int *program) {
     glDeleteProgram(*program);
     delete program;
-};
+}
+} // namespace
+
+namespace lgl {
 
 ShaderProgram::ShaderProgram(const std::string &vertexShaderPathname,
                              const std::string &fragmentShaderPathname) :
-    program(new unsigned int(glCreateProgram()), programDeleter) {
+    program(new unsigned int(glCreateProgram()), deleteProgram) {
 
     Shader vertexShader(vertexShaderPathname, GL_VERTEX_SHADER);
     Shader fragmentShader(fragmentShaderPathname, GL_FRAGMENT_SHADER);

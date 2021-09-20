@@ -20,10 +20,7 @@ public:
     void setUniform(const std::string &name, const glm::vec4 &value);
 
 private:
-    using ProgramDeleter = std::function<void(unsigned int *)>;
-    static ProgramDeleter programDeleter;
-
-    std::unique_ptr<unsigned int, ProgramDeleter> program;
+    std::unique_ptr<unsigned int, void(*)(unsigned int *)> program;
 };
 
 } // namespace lgl
