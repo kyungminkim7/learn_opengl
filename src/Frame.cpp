@@ -1,7 +1,7 @@
 #include <lgl/Frame.h>
 
 #include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/quaternion.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 namespace lgl {
 
@@ -36,7 +36,8 @@ void Frame::translateInLocalFrame(const glm::vec3 &translation) {
 }
 
 void Frame::rotate(float angle_rad, const glm::vec3 &axis) {
-    this->orientation = glm::toMat3(glm::angleAxis(angle_rad, axis)) * this->orientation;
+    this->orientation = glm::mat3_cast(glm::rotate(glm::quat_cast(this->orientation),
+                                                   angle_rad, axis));
 }
 
 } // namespace lgl
