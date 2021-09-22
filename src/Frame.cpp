@@ -23,7 +23,7 @@ void Frame::setScale(const glm::vec3 &scale) {
     this->scale = scale;
 }
 
-void Frame::setPostion(const glm::vec3 &position) {
+void Frame::setPosition(const glm::vec3 &position) {
     this->position = position;
 }
 

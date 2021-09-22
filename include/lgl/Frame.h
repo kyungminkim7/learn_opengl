@@ -15,7 +15,7 @@ public:
     glm::mat4 getViewMatrix() const;
 
     void setScale(const glm::vec3 &scale);
-    void setPostion(const glm::vec3 &position);
+    void setPosition(const glm::vec3 &position);
     void translate(const glm::vec3 &translation);
     void translateInLocalFrame(const glm::vec3 &translation);
     void rotate(float angle_rad, const glm::vec3 &axis);

@@ -36,7 +36,7 @@ inline glm::vec3 Camera::getPosition() const { return this->frame.getPosition();
 inline glm::mat4 Camera::getModelMatrix() const { return this->frame.getModelMatrix(); }
 inline glm::mat4 Camera::getViewMatrix() const { return this->frame.getViewMatrix(); }
 
-inline void Camera::setPosition(const glm::vec3 &position) { this->frame.setPostion(position); }
+inline void Camera::setPosition(const glm::vec3 &position) { this->frame.setPosition(position); }
 inline void Camera::translate(const glm::vec3 &translation) { this->frame.translate(translation); }
 inline void Camera::translateInLocalFrame(const glm::vec3 &translation) { this->frame.translateInLocalFrame(translation); }
 inline void Camera::rotate(float angle_rad, const glm::vec3 &axis) { this->frame.rotate(angle_rad, axis); }
