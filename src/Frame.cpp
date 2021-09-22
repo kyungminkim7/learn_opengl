@@ -40,4 +40,10 @@ void Frame::rotate(float angle_rad, const glm::vec3 &axis) {
                                                    angle_rad, axis));
 }
 
+void Frame::lookAtPoint(const glm::vec3 &point) {
+    this->orientation[0] = glm::normalize(point - this->position);
+    this->orientation[1] = glm::cross(glm::vec3(0.0f, 0.0f, 1.0f), this->orientation[0]);
+    this->orientation[2] = glm::cross(this->orientation[0], this->orientation[1]);
+}
+
 } // namespace lgl

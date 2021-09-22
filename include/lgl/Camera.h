@@ -19,6 +19,7 @@ public:
     void translate(const glm::vec3 &translation);
     void translateInLocalFrame(const glm::vec3 &translation);
     void rotate(float angle_rad, const glm::vec3 &axis);
+    void lookAtPoint(const glm::vec3 &point);
 
 private:
     void updateProjectionMatrix();
@@ -40,5 +41,6 @@ inline void Camera::setPosition(const glm::vec3 &position) { this->frame.setPosi
 inline void Camera::translate(const glm::vec3 &translation) { this->frame.translate(translation); }
 inline void Camera::translateInLocalFrame(const glm::vec3 &translation) { this->frame.translateInLocalFrame(translation); }
 inline void Camera::rotate(float angle_rad, const glm::vec3 &axis) { this->frame.rotate(angle_rad, axis); }
+inline void Camera::lookAtPoint(const glm::vec3 &point) { this->frame.lookAtPoint(point); }
 
 } // namespace lgl
