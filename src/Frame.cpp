@@ -4,6 +4,22 @@
 
 namespace lgl {
 
+glm::mat4 Frame::getModelMatrix() {
+    glm::mat4 modelMatrix(this->orientation);
+    for (auto i = 0; i < 3; ++i) {
+        modelMatrix[3][i] = this->position[i];
+    }
+    return glm::scale(modelMatrix, this->scale);
+}
+
+void Frame::setScale(const glm::vec3 &scale) {
+    this->scale = scale;
+}
+
+void Frame::setPostion(const glm::vec3 &position) {
+    this->position = position;
+}
+
 void Frame::translate(const glm::vec3 &translation) {
     this->position += translation;
 }
