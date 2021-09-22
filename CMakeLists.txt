@@ -4,6 +4,7 @@ project(learn_opengl VERSION 1.0.0)
 add_subdirectory(extern)
 
 add_library(lgl
+    src/Camera.cpp
     src/Frame.cpp
     src/Shader.cpp
     src/ShaderProgram.cpp
