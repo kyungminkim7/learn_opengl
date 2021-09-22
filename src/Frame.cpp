@@ -4,7 +4,7 @@
 
 namespace lgl {
 
-glm::mat4 Frame::getModelMatrix() {
+glm::mat4 Frame::getModelMatrix() const {
     glm::mat4 modelMatrix(this->orientation);
     for (auto i = 0; i < 3; ++i) {
         modelMatrix[3][i] = this->position[i];

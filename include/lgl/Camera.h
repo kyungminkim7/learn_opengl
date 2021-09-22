@@ -22,6 +22,6 @@ private:
     float farPlane;
 };
 
-inline glm::mat4 Camera::getProjectionMatrix() { return this->projectionMatrix; }
+inline glm::mat4 Camera::getProjectionMatrix() const { return this->projectionMatrix; }
 
 } // namespace lgl
