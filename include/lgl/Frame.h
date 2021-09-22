@@ -12,6 +12,7 @@ public:
     glm::vec3 getPosition() const;
     glm::mat3 getOrientation() const;
     glm::mat4 getModelMatrix() const;
+    glm::mat4 getViewMatrix() const;
 
     void setScale(const glm::vec3 &scale);
     void setPostion(const glm::vec3 &position);
@@ -23,7 +24,6 @@ private:
     glm::vec3 scale{1.0f};
     glm::vec3 position{0.0f};
     glm::mat3 orientation{1.0f};
-
 };
 
 inline glm::vec3 Frame::getScale() const { return this->scale; }

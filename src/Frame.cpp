@@ -1,5 +1,6 @@
 #include <lgl/Frame.h>
 
+#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/quaternion.hpp>
 
 namespace lgl {
@@ -10,6 +11,12 @@ glm::mat4 Frame::getModelMatrix() const {
         modelMatrix[3][i] = this->position[i];
     }
     return glm::scale(modelMatrix, this->scale);
+}
+
+glm::mat4 Frame::getViewMatrix() const {
+    return glm::lookAt(this->position,
+                       this->position + this->orientation[0],
+                       this->orientation[2]);
 }
 
 void Frame::setScale(const glm::vec3 &scale) {
