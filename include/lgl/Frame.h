@@ -19,6 +19,7 @@ public:
     void translate(const glm::vec3 &translation);
     void translateInLocalFrame(const glm::vec3 &translation);
     void rotate(float angle_rad, const glm::vec3 &axis);
+    void rotateInLocalFrame(float angle_rad, const glm::vec3 &axis);
     void lookAtPoint(const glm::vec3 &point);
 
 private:

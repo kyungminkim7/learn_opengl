@@ -39,6 +39,11 @@ void Frame::rotate(float angle_rad, const glm::vec3 &axis) {
             this->orientation;
 }
 
+void Frame::rotateInLocalFrame(float angle_rad, const glm::vec3 &axis) {
+    this->orientation = static_cast<glm::mat3>(glm::rotate(glm::mat4(this->orientation),
+                                                           angle_rad, axis));
+}
+
 void Frame::lookAtPoint(const glm::vec3 &point) {
     this->orientation[0] = glm::normalize(point - this->position);
     this->orientation[1] = glm::cross(glm::vec3(0.0f, 0.0f, 1.0f), this->orientation[0]);
