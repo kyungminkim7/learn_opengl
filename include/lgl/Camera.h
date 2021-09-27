@@ -1,5 +1,7 @@
 #pragma once
 
+#include <chrono>
+
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
 
@@ -8,8 +10,12 @@
 namespace lgl {
 
 class Camera {
+private:
+    using Duration = std::chrono::duration<float>;
+
 public:
     Camera(float fov_rad, float aspectRatio, float nearPlane, float farPlane);
+
     glm::vec3 getPosition() const;
     glm::mat4 getProjectionMatrix() const;
     glm::mat4 getModelMatrix() const;
@@ -22,6 +28,12 @@ public:
     void rotateInLocalFrame(float angle_rad, const glm::vec3 &axis);
     void lookAtPoint(const glm::vec3 &point);
 
+    void onUpdate(Duration duration);
+
+    void setLocalSpeedX(float speed);
+    void setLocalSpeedY(float speed);
+    void setLocalSpeedZ(float speed);
+
 private:
     void updateProjectionMatrix();
 
@@ -31,6 +43,8 @@ private:
     float aspectRatio;
     float nearPlane;
     float farPlane;
+
+    glm::vec3 localLinearVelocity{0.0f};
 };
 
 inline glm::mat4 Camera::getProjectionMatrix() const { return this->projectionMatrix; }
