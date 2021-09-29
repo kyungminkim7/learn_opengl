@@ -1,5 +1,7 @@
+#include <algorithm>
 #include <cstdlib>
 #include <iostream>
+#include <memory>
 #include <vector>
 
 #include <glad/glad.h>
@@ -11,8 +13,14 @@
 #include <lgl/ShaderProgram.h>
 #include <lgl/Texture2D.h>
 
+using Clock = std::chrono::steady_clock;
+
+std::unique_ptr<lgl::Camera> cam;
+
 static void frameBufferSizeCallback(GLFWwindow *window, int width, int height);
-static void processInput(GLFWwindow *window);
+static void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
+static void cursorPosCallback(GLFWwindow *window, double x, double y);
+static void scrollCallback(GLFWwindow *window, double xOffset, double yOffset);
 
 int main(int argc, char *argv[]) {
     // Initialize OpenGL context
@@ -38,9 +46,18 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
-    glViewport(0, 0, windowWidth, windowHeight);
+    // Set window callbacks
     glfwSetFramebufferSizeCallback(window, frameBufferSizeCallback);
 
+    glfwSetKeyCallback(window, keyCallback);
+
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetCursorPosCallback(window, cursorPosCallback);
+
+    glfwSetScrollCallback(window, scrollCallback);
+
+    // Initialize OpenGL settings
+    glViewport(0, 0, windowWidth, windowHeight);
     glEnable(GL_DEPTH_TEST);
 
     {
@@ -134,19 +151,23 @@ int main(int argc, char *argv[]) {
         auto pos = cubePositions.cbegin();
         for (auto &f : frames) { f.setPosition(*(pos++)); }
 
-        lgl::Camera cam(glm::radians(45.0f), static_cast<float>(windowWidth) / windowHeight, 0.1f, 100.0f);
-        cam.setPosition({0.0f, 0.0f, 10.0f});
-        cam.rotate(glm::radians(90.0f), {0.0f, 1.0f, 0.0f});
-        cam.rotateInLocalFrame(glm::radians(-90.0f), {1.0f, 0.0f, 0.0f});
+        cam = std::make_unique<lgl::Camera>(glm::radians(45.0f), static_cast<float>(windowWidth) / windowHeight, 0.1f, 100.0f);
+        cam->setPosition({0.0f, 0.0f, 10.0f});
+        cam->rotate(glm::radians(90.0f), {0.0f, 1.0f, 0.0f});
+        cam->rotateInLocalFrame(glm::radians(-90.0f), {1.0f, 0.0f, 0.0f});
 
+        auto lastUpdateTime = Clock::now();
         while (!glfwWindowShouldClose(window)) {
-            processInput(window);
+            auto currentUpdateTime = Clock::now();
+            auto updateDuration = currentUpdateTime - lastUpdateTime;
+            lastUpdateTime = currentUpdateTime;
 
             glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             shaderProgram.use();
-            shaderProgram.setUniform("view_projection", cam.getProjectionMatrix() * cam.getViewMatrix());
+            cam->onUpdate(updateDuration);
+            shaderProgram.setUniform("view_projection", cam->getProjectionMatrix() * cam->getViewMatrix());
 
             glActiveTexture(GL_TEXTURE0);
             containerTexture.bind();
@@ -166,6 +187,8 @@ int main(int argc, char *argv[]) {
             glfwSwapBuffers(window);
             glfwPollEvents();
         }
+
+        cam.reset();
     }
 
     glfwTerminate();
@@ -176,8 +199,80 @@ void frameBufferSizeCallback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-void processInput(GLFWwindow *window) {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, true);
+void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
+    static const auto FORWARD_KEY = GLFW_KEY_W;
+    static const auto BACK_KEY = GLFW_KEY_S;
+    static const auto LEFT_KEY = GLFW_KEY_A;
+    static const auto RIGHT_KEY = GLFW_KEY_D;
+    static const auto speed = 5.0f;
+
+    if (action == GLFW_PRESS) {
+        switch (key) {
+        case GLFW_KEY_ESCAPE: glfwSetWindowShouldClose(window, true); break;
+        case FORWARD_KEY: cam->setLocalSpeedX(speed); break;
+        case BACK_KEY: cam->setLocalSpeedX(-speed); break;
+        case LEFT_KEY: cam->setLocalSpeedY(speed); break;
+        case RIGHT_KEY: cam->setLocalSpeedY(-speed); break;
+        default: break;
+        }
+    } else if (action == GLFW_RELEASE) {
+        switch (key) {
+        case FORWARD_KEY:
+            switch (glfwGetKey(window, BACK_KEY)) {
+            case GLFW_PRESS: cam->setLocalSpeedX(-speed); break;
+            case GLFW_RELEASE: cam->setLocalSpeedX(0.0f); break;
+            default: break;
+            }
+            break;
+
+        case BACK_KEY:
+            switch (glfwGetKey(window, FORWARD_KEY)) {
+            case GLFW_PRESS: cam->setLocalSpeedX(speed); break;
+            case GLFW_RELEASE: cam->setLocalSpeedX(0.0f); break;
+            default: break;
+            }
+            break;
+
+        case LEFT_KEY:
+            switch (glfwGetKey(window, RIGHT_KEY)) {
+            case GLFW_PRESS: cam->setLocalSpeedY(-speed); break;
+            case GLFW_RELEASE: cam->setLocalSpeedY(0.0f); break;
+            default: break;
+            }
+            break;
+
+        case RIGHT_KEY:
+            switch (glfwGetKey(window, LEFT_KEY)) {
+            case GLFW_PRESS: cam->setLocalSpeedY(speed); break;
+            case GLFW_RELEASE: cam->setLocalSpeedY(0.0f); break;
+            default: break;
+            }
+            break;
+
+        default: break;
+        }
     }
+}
+
+void cursorPosCallback(GLFWwindow *window, double x, double y) {
+    static const auto sensitivity = 0.002f;
+    static auto lastX = x;
+    static auto lastY = y;
+
+    const auto offsetX = x - lastX;
+    const auto offsetY = y - lastY;
+    lastX = x;
+    lastY = y;
+
+    cam->rotateInLocalFrame(offsetY * sensitivity, {0.0f, 1.0f, 0.0f});
+    cam->rotate(offsetX * sensitivity, {0.0f, -1.0f, 0.0f});
+}
+
+void scrollCallback(GLFWwindow *window, double xOffset, double yOffset) {
+    static const auto minFOV_deg = 1.0f;
+    static const auto maxFOV_deg = 45.0f;
+    auto fov_deg = glm::degrees(cam->getFOV()) - static_cast<float>(yOffset);
+    fov_deg = std::max(minFOV_deg, fov_deg);
+    fov_deg = std::min(maxFOV_deg, fov_deg);
+    cam->setFOV(glm::radians(fov_deg));
 }

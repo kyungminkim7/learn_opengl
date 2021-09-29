@@ -4,7 +4,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-static void onFramebufferSizeChanged(GLFWwindow *window, int width, int height);
+static void frameBufferSizeCallback(GLFWwindow *window, int width, int height);
 static void processInput(GLFWwindow *window);
 
 int main(int argc, char *argv[]) {
@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
     }
 
     glViewport(0, 0, windowWidth, windowHeight);
-    glfwSetFramebufferSizeCallback(window, onFramebufferSizeChanged);
+    glfwSetFramebufferSizeCallback(window, frameBufferSizeCallback);
 
     while (!glfwWindowShouldClose(window)) {
         processInput(window);
@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
     return EXIT_SUCCESS;
 }
 
-void onFramebufferSizeChanged(GLFWwindow *window, int width, int height) {
+void frameBufferSizeCallback(GLFWwindow *window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
