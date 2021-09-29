@@ -16,6 +16,9 @@ private:
 public:
     Camera(float fov_rad, float aspectRatio, float nearPlane, float farPlane);
 
+    float getFOV() const;
+    void setFOV(float fov_rad);
+
     glm::vec3 getPosition() const;
     glm::mat4 getProjectionMatrix() const;
     glm::mat4 getModelMatrix() const;

@@ -12,6 +12,15 @@ Camera::Camera(float fov_rad, float aspectRatio, float nearPlane, float farPlane
     this->updateProjectionMatrix();
 }
 
+float Camera::getFOV() const {
+    return this->fov_rad;
+}
+
+void Camera::setFOV(float fov_rad) {
+    this->fov_rad = fov_rad;
+    this->updateProjectionMatrix();
+}
+
 void Camera::updateProjectionMatrix() {
     this->projectionMatrix = glm::perspective(this->fov_rad, this->aspectRatio,
                                               this->nearPlane, this->farPlane);
