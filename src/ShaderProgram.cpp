@@ -70,6 +70,12 @@ void ShaderProgram::setUniform(const std::string &name, const glm::vec4 &value) 
     glUniform4f(location, value.x, value.y, value.z, value.w);
 }
 
+void ShaderProgram::setUniform(const std::string &name, const glm::mat3 &value) {
+    auto location = glGetUniformLocation(*this->program, name.c_str());
+    assert(("Failed to glGetUniformLocation()", location != -1));
+    glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(value));
+}
+
 void ShaderProgram::setUniform(const std::string &name, const glm::mat4 &value) {
     auto location = glGetUniformLocation(*this->program, name.c_str());
     assert(("Failed to glGetUniformLocation()", location != -1));

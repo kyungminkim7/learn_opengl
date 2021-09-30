@@ -19,6 +19,7 @@ public:
     void setUniform(const std::string &name, int value);
     void setUniform(const std::string &name, const glm::vec3 &value);
     void setUniform(const std::string &name, const glm::vec4 &value);
+    void setUniform(const std::string &name, const glm::mat3 &value);
     void setUniform(const std::string &name, const glm::mat4 &value);
 
 private:
