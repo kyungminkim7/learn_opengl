@@ -13,6 +13,7 @@ public:
     glm::mat3 getOrientation() const;
     glm::mat4 getModelMatrix() const;
     glm::mat4 getViewMatrix() const;
+    glm::mat3 getNormalMatrix() const;
 
     void setScale(const glm::vec3 &scale);
     void setPosition(const glm::vec3 &position);
@@ -26,6 +27,9 @@ private:
     glm::vec3 scale{1.0f};
     glm::vec3 position{0.0f};
     glm::mat3 orientation{1.0f};
+
+    mutable bool normalMatrixIsValid = true;
+    mutable glm::mat3 normalMatrix{1.0f};
 };
 
 inline glm::vec3 Frame::getScale() const { return this->scale; }
