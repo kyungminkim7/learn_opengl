@@ -93,24 +93,24 @@ int main(int argc, char *argv[]) {
         shaderProgram.setUniform("texture1", 1);
 
         while (!glfwWindowShouldClose(window)) {
-        processInput(window);
+            processInput(window);
 
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+            glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
 
-        shaderProgram.use();
+            shaderProgram.use();
 
-        glActiveTexture(GL_TEXTURE0);
-        containerTexture.bind();
+            glActiveTexture(GL_TEXTURE0);
+            containerTexture.bind();
 
-        glActiveTexture(GL_TEXTURE1);
-        faceTexture.bind();
+            glActiveTexture(GL_TEXTURE1);
+            faceTexture.bind();
 
-        glBindVertexArray(vao);
-        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+            glBindVertexArray(vao);
+            glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+            glfwSwapBuffers(window);
+            glfwPollEvents();
         }
     }
 
