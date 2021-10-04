@@ -11,6 +11,9 @@ public:
     glm::vec3 getScale() const;
     glm::vec3 getPosition() const;
     glm::mat3 getOrientation() const;
+    glm::vec3 getOrientationX() const;
+    glm::vec3 getOrientationY() const;
+    glm::vec3 getOrientationZ() const;
     glm::mat4 getModelMatrix() const;
     glm::mat4 getViewMatrix() const;
     glm::mat3 getNormalMatrix() const;
@@ -35,5 +38,8 @@ private:
 inline glm::vec3 Frame::getScale() const { return this->scale; }
 inline glm::vec3 Frame::getPosition() const { return this->position; }
 inline glm::mat3 Frame::getOrientation() const { return this->orientation; }
+inline glm::vec3 Frame::getOrientationX() const { return this->orientation[0]; }
+inline glm::vec3 Frame::getOrientationY() const { return this->orientation[1]; }
+inline glm::vec3 Frame::getOrientationZ() const { return this->orientation[2]; }
 
 } // namespace lgl
