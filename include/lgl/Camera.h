@@ -20,6 +20,9 @@ public:
     void setFOV(float fov_rad);
 
     glm::vec3 getPosition() const;
+    glm::vec3 getOrientationX() const;
+    glm::vec3 getOrientationY() const;
+    glm::vec3 getOrientationZ() const;
     glm::mat4 getProjectionMatrix() const;
     glm::mat4 getModelMatrix() const;
     glm::mat4 getViewMatrix() const;
@@ -50,6 +53,9 @@ private:
     glm::vec3 localLinearVelocity{0.0f};
 };
 
+inline glm::vec3 Camera::getOrientationX() const { return this->frame.getOrientationX(); }
+inline glm::vec3 Camera::getOrientationY() const { return this->frame.getOrientationY(); }
+inline glm::vec3 Camera::getOrientationZ() const { return this->frame.getOrientationZ(); }
 inline glm::mat4 Camera::getProjectionMatrix() const { return this->projectionMatrix; }
 inline glm::vec3 Camera::getPosition() const { return this->frame.getPosition(); }
 inline glm::mat4 Camera::getModelMatrix() const { return this->frame.getModelMatrix(); }
