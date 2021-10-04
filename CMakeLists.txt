@@ -22,6 +22,7 @@ target_include_directories(lgl
 )
 
 target_link_libraries(lgl PUBLIC
+    assimp::assimp
     glad::glad
     glfw
     glm::glm
