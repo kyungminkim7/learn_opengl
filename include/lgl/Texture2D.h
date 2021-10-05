@@ -12,7 +12,7 @@ public:
     void bind();
 
 private:
-    std::unique_ptr<unsigned int, void(*)(unsigned int *)> texture;
+    std::shared_ptr<unsigned int> texture;
 };
 
 } // namespace lgl

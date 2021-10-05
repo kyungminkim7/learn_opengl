@@ -5,19 +5,11 @@
 
 #include <lgl/Exception.h>
 
-namespace {
-
-void deleteTexture(unsigned int *texture) {
-    glDeleteTextures(1, texture);
-    delete texture;
-}
-
-} // namespace
-
 namespace lgl {
 
 Texture2D::Texture2D(const std::string &pathname) :
-    texture(new unsigned int, deleteTexture) {
+    texture(new unsigned int,
+            [](auto *texture){ glDeleteTextures(1, texture); delete texture; }) {
 
     glGenTextures(1, this->texture.get());
 
