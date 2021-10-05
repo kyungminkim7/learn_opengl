@@ -6,6 +6,7 @@ add_subdirectory(extern)
 add_library(lgl
     src/Camera.cpp
     src/Frame.cpp
+    src/Mesh.cpp
     src/Shader.cpp
     src/ShaderProgram.cpp
     src/Texture2D.cpp
