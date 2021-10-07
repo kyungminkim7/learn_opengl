@@ -6,10 +6,12 @@ add_subdirectory(extern)
 add_library(lgl
     src/Camera.cpp
     src/Frame.cpp
+    src/GameObject.cpp
     src/Mesh.cpp
     src/Shader.cpp
     src/ShaderProgram.cpp
     src/Texture2D.cpp
+    src/Vertex.cpp
 )
 add_library(lgl::lgl ALIAS lgl)
 
