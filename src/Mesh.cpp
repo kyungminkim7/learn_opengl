@@ -1,5 +1,7 @@
 #include <lgl/Mesh.h>
 
+#include <utility>
+
 #include <glad/glad.h>
 
 #include <lgl/Vertex.h>
@@ -23,13 +25,13 @@ namespace lgl {
 
 Mesh::Mesh(const std::vector<Vertex> &vertices,
            const IndexContainer &indices,
-           const std::vector<std::string> &diffuseTextures,
-           const std::vector<std::string> &specularTextures) :
+           const std::vector<Texture2D> diffuseTextures,
+           const std::vector<Texture2D> specularTextures) :
     vao(new unsigned int, deleteVertexArray),
     vbo(new unsigned int, deleteBuffer),
     ebo(new unsigned int, deleteBuffer),
-    diffuseTextures(diffuseTextures.cbegin(), diffuseTextures.cend()),
-    specularTextures(specularTextures.cbegin(), specularTextures.cend()),
+    diffuseTextures(std::move(diffuseTextures)),
+    specularTextures(std::move(specularTextures)),
     numIndices(indices.size()) {
 
     glGenVertexArrays(1, this->vao.get());

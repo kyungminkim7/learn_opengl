@@ -18,8 +18,8 @@ private:
 public:
     Mesh(const std::vector<Vertex> &vertices,
          const IndexContainer &indices,
-         const std::vector<std::string> &diffuseTextures,
-         const std::vector<std::string> &specularTextures);
+         const std::vector<Texture2D> diffuseTextures,
+         const std::vector<Texture2D> specularTextures);
 
     void render(ShaderProgram *shaderProgram);
 
