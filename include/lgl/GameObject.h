@@ -39,7 +39,7 @@ public:
     void render(ShaderProgram *shaderProgram);
 
 private:
-    void processNode(const aiNode *node, const aiScene *scene);
+    void processNode(const aiNode *node, const aiScene *scene, const std::string &dir);
 
     Frame frame;
     std::vector<Mesh> meshes;

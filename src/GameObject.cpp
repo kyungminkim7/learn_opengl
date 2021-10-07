@@ -17,9 +17,9 @@
 
 namespace {
 
-std::vector<lgl::Texture2D> loadMaterialTextures(aiMaterial *material,
+std::vector<std::string> loadMaterialTextures(aiMaterial *material,
                                                  aiTextureType type) {
-    std::vector<lgl::Texture2D> textures;
+    std::vector<std::string> textures;
     textures.reserve(material->GetTextureCount(type));
     for (auto i = 0u; i < material->GetTextureCount(type); ++i) {
         aiString pathname;
@@ -29,7 +29,7 @@ std::vector<lgl::Texture2D> loadMaterialTextures(aiMaterial *material,
     return textures;
 }
 
-lgl::Mesh processMesh(const aiMesh *mesh, const aiScene *scene) {
+lgl::Mesh processMesh(const aiMesh *mesh, const aiScene *scene, const std::string &dir) {
     // Copy vertex data
     std::vector<lgl::Vertex> vertices;
     vertices.reserve(mesh->mNumVertices);
@@ -53,16 +53,24 @@ lgl::Mesh processMesh(const aiMesh *mesh, const aiScene *scene) {
 
 
     // Load textures
-    std::vector<lgl::Texture2D> diffuseTextures;
-    std::vector<lgl::Texture2D> specularTextures;
+    std::vector<std::string> diffuseTexturePathnames;
+    std::vector<std::string> specularTexturePathnames;
     if (mesh->mMaterialIndex >= 0) {
-        auto material = scene->mMaterials[mesh->mMaterialIndex];
-        diffuseTextures = loadMaterialTextures(material, aiTextureType_DIFFUSE);
-        specularTextures = loadMaterialTextures(material, aiTextureType_SPECULAR);
+        const auto material = scene->mMaterials[mesh->mMaterialIndex];
+        diffuseTexturePathnames = loadMaterialTextures(material, aiTextureType_DIFFUSE);
+        specularTexturePathnames = loadMaterialTextures(material, aiTextureType_SPECULAR);
+
+        const auto prependDir = [&dir](const std::string &filename){ return dir + "/" + filename; };
+        std::transform(diffuseTexturePathnames.begin(), diffuseTexturePathnames.end(),
+                       diffuseTexturePathnames.begin(), prependDir);
+        std::transform(specularTexturePathnames.begin(), specularTexturePathnames.end(),
+                       specularTexturePathnames.begin(), prependDir);
     }
 
-    return lgl::Mesh(vertices, indices,
-                     std::move(diffuseTextures), std::move(specularTextures));
+    std::vector<lgl::Texture2D> diffuseTextures(diffuseTexturePathnames.cbegin(), diffuseTexturePathnames.cend());
+    std::vector<lgl::Texture2D> specularTextures(specularTexturePathnames.cbegin(), specularTexturePathnames.cend());
+
+    return lgl::Mesh(vertices, indices, std::move(diffuseTextures), std::move(specularTextures));
 }
 
 } // namespace
@@ -79,17 +87,18 @@ GameObject::GameObject(const std::string &pathname) {
         throw LoadError("Failed to load model from: " + pathname);
     }
 
-    this->processNode(scene->mRootNode, scene);
+    const auto dir = pathname.substr(0, pathname.find_last_of('/'));
+    this->processNode(scene->mRootNode, scene, dir);
 }
 
-void GameObject::processNode(const aiNode *node, const aiScene *scene) {
+void GameObject::processNode(const aiNode *node, const aiScene *scene, const std::string &dir) {
     this->meshes.reserve(this->meshes.size() + node->mNumMeshes);
     std::transform(node->mMeshes, node->mMeshes + node->mNumMeshes,
                    std::back_inserter(this->meshes),
-                   [scene](const auto i){ return processMesh(scene->mMeshes[i], scene); });
+                   [scene, &dir](const auto i){ return processMesh(scene->mMeshes[i], scene, dir); });
 
     std::for_each(node->mChildren, node->mChildren + node->mNumChildren,
-                  [this, scene](const auto child){ this->processNode(child, scene); });
+                  [this, scene, &dir](const auto child){ this->processNode(child, scene, dir); });
 }
 
 void GameObject::onUpdate(Duration duration) {
