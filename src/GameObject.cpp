@@ -11,6 +11,7 @@
 #include <glm/vec2.hpp>
 
 #include <lgl/Exception.h>
+#include <lgl/ShaderProgram.h>
 #include <lgl/Texture2D.h>
 #include <lgl/Vertex.h>
 
@@ -96,6 +97,9 @@ void GameObject::onUpdate(Duration duration) {
 }
 
 void GameObject::render(ShaderProgram *shaderProgram) {
+    shaderProgram->setUniform("model", this->frame.getModelMatrix());
+    shaderProgram->setUniform("normal", this->frame.getNormalMatrix());
+
     std::for_each(this->meshes.begin(), this->meshes.end(),
                   [shaderProgram](auto &m){ m.render(shaderProgram); });
 }
