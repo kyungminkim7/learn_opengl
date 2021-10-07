@@ -87,7 +87,7 @@ GameObject::GameObject(const std::string &pathname) {
         throw LoadError("Failed to load model from: " + pathname);
     }
 
-    const auto dir = pathname.substr(0, pathname.find_last_of('/'));
+    const auto dir = pathname.substr(0, pathname.find_last_of("/\\"));
     this->processNode(scene->mRootNode, scene, dir);
 }
 
