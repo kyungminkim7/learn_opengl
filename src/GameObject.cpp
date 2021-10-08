@@ -53,24 +53,23 @@ lgl::Mesh processMesh(const aiMesh *mesh, const aiScene *scene, const std::strin
 
 
     // Load textures
-    std::vector<std::string> diffuseTexturePathnames;
-    std::vector<std::string> specularTexturePathnames;
+    std::vector<std::string> diffuseTextures;
+    std::vector<std::string> specularTextures;
     if (mesh->mMaterialIndex >= 0) {
         const auto material = scene->mMaterials[mesh->mMaterialIndex];
-        diffuseTexturePathnames = loadMaterialTextures(material, aiTextureType_DIFFUSE);
-        specularTexturePathnames = loadMaterialTextures(material, aiTextureType_SPECULAR);
+        diffuseTextures = loadMaterialTextures(material, aiTextureType_DIFFUSE);
+        specularTextures = loadMaterialTextures(material, aiTextureType_SPECULAR);
 
         const auto prependDir = [&dir](const std::string &filename){ return dir + "/" + filename; };
-        std::transform(diffuseTexturePathnames.begin(), diffuseTexturePathnames.end(),
-                       diffuseTexturePathnames.begin(), prependDir);
-        std::transform(specularTexturePathnames.begin(), specularTexturePathnames.end(),
-                       specularTexturePathnames.begin(), prependDir);
+        std::transform(diffuseTextures.begin(), diffuseTextures.end(),
+                       diffuseTextures.begin(), prependDir);
+        std::transform(specularTextures.begin(), specularTextures.end(),
+                       specularTextures.begin(), prependDir);
     }
 
-    std::vector<lgl::Texture2D> diffuseTextures(diffuseTexturePathnames.cbegin(), diffuseTexturePathnames.cend());
-    std::vector<lgl::Texture2D> specularTextures(specularTexturePathnames.cbegin(), specularTexturePathnames.cend());
-
-    return lgl::Mesh(vertices, indices, std::move(diffuseTextures), std::move(specularTextures));
+    return lgl::Mesh(vertices, indices,
+                     (std::vector<lgl::Texture2D>(diffuseTextures.cbegin(), diffuseTextures.cend())),
+                     std::vector<lgl::Texture2D>(specularTextures.cbegin(), specularTextures.cend()));
 }
 
 } // namespace
