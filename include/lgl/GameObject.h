@@ -28,6 +28,7 @@ public:
     glm::vec3 getOrientationZ() const;
     glm::mat4 getModelMatrix() const;
 
+    void setScale(const glm::vec3 &scale);
     void setPosition(const glm::vec3 &position);
     void translate(const glm::vec3 &translation);
     void translateInLocalFrame(const glm::vec3 &translation);
@@ -51,6 +52,7 @@ inline glm::vec3 GameObject::getOrientationZ() const { return this->frame.getOri
 inline glm::vec3 GameObject::getPosition() const { return this->frame.getPosition(); }
 inline glm::mat4 GameObject::getModelMatrix() const { return this->frame.getModelMatrix(); }
 
+inline void GameObject::setScale(const glm::vec3 &scale) { this->frame.setScale(scale); }
 inline void GameObject::setPosition(const glm::vec3 &position) { this->frame.setPosition(position); }
 inline void GameObject::translate(const glm::vec3 &translation) { this->frame.translate(translation); }
 inline void GameObject::translateInLocalFrame(const glm::vec3 &translation) { this->frame.translateInLocalFrame(translation); }
