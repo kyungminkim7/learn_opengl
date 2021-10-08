@@ -36,6 +36,7 @@ target_link_libraries(lgl PUBLIC
 target_compile_features(lgl PUBLIC cxx_std_14)
 
 file(COPY textures DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY models DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_subdirectory(l1_hello_window)
 add_subdirectory(l2_hello_triangle)
@@ -50,3 +51,4 @@ add_subdirectory(l10_materials)
 add_subdirectory(l11_lighting_maps)
 add_subdirectory(l12_light_casters)
 add_subdirectory(l13_multiple_lights)
+add_subdirectory(l14_assimp)
